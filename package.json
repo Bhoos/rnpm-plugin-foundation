@@ -1,0 +1,25 @@
+{
+  "name": "rnpm-plugin-foundation",
+  "version": "0.0.1",
+  "description": "A react-native dependency management plugin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhoos/rnpm-plugin-foundation.git"
+  },
+  "author": "Ranjan Shrestha",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bhoos/rnpm-plugin-foundation/issues"
+  },
+  "homepage": "https://github.com/bhoos/rnpm-plugin-foundation#readme",
+  "devDependencies": {
+    "babel-eslint": "^8.0.3",
+    "eslint": "^4.13.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0"
+  }
+}
