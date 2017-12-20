@@ -18,8 +18,16 @@
   "homepage": "https://github.com/bhoos/rnpm-plugin-foundation#readme",
   "devDependencies": {
     "babel-eslint": "^8.0.3",
+    "babel-jest": "^21.2.0",
     "eslint": "^4.13.1",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0"
+    "eslint-plugin-import": "^2.8.0",
+    "jest": "^21.2.1"
+  },
+  "dependencies": {
+    "mkdirp": "^0.5.1",
+    "npmlog": "^4.1.2",
+    "semver": "^5.4.1",
+    "xcode": "^1.0.0"
   }
 }
