@@ -7,5 +7,9 @@ module.exports = function createFromTemplate(file, dict, target) {
     dict[key]
   ));
 
-  fs.writeFileSync(target, fileData, 'utf-8');
+  if (target) {
+    fs.writeFileSync(target, fileData, 'utf-8');
+  }
+
+  return target;
 };
