@@ -1,0 +1,9 @@
+Pod::Spec.new do |s|
+  s.name = '{{pkg.name}}'
+  s.version = '{{pkg.version}}'
+  s.summary = '{{pkg.description}}'
+  s.license = '{{pkg.license}}'
+  s.author = '{{pkg.author}}'
+
+  s.source_files = {{FILES}}
+end
