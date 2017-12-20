@@ -46,7 +46,8 @@ function scanXCode(folder) {
 /**
  * Search for pod specifications for the given package name. If one or more
  * pod specification is found, return an array of information for those pods.
- * If pods are not found, then return an object containing the source files
+ * If pods are not found, then return array of information with source files
+ * that could used to create a pod file.
  *
  * @param {*} pkgName The name of the library (Ex: react-native-fbsdk, etc)
  */
@@ -73,29 +74,27 @@ module.exports = function findIOSPodspec(pkgName) {
   // files
   const projects = scanXCode(pkgFolder).concat(scan(iosFolder));
   // Create a list of source files from the project file
-  return {
-    sourceFiles: projects.reduce((res, prj) => {
-      const pbxProj = xcode.project(prj.pbxproj);
+  return projects.reduce((res, prj) => {
+    const pbxProj = xcode.project(prj.pbxproj);
 
-      pbxProj.parseSync();
+    pbxProj.parseSync();
 
-      // find all the files (*.m and *.h) referenced by the project
-      // and include them
-      const ref = pbxProj.pbxFileReferenceSection();
-      const sourceFiles = Object.keys(ref).filter((key) => {
-        const r = ref[key];
-        if (!(r.isa === 'PBXFileReference')) {
-          return false;
-        }
+    // find all the files (*.m and *.h) referenced by the project
+    // and include them
+    const ref = pbxProj.pbxFileReferenceSection();
+    const sourceFiles = Object.keys(ref).filter((key) => {
+      const r = ref[key];
+      if (!(r.isa === 'PBXFileReference')) {
+        return false;
+      }
 
-        const type = r.lastKnownFileType;
-        return type === 'sourcecode.c.h' || type === 'sourcecode.c.objc';
-      }).map(k => ref[k].path);
+      const type = r.lastKnownFileType;
+      return type === 'sourcecode.c.h' || type === 'sourcecode.c.objc';
+    }).map(k => ref[k].path);
 
-      return res.concat({
-        path: prj.path,
-        files: sourceFiles,
-      });
-    }, []),
-  };
+    return res.concat({
+      path: prj.path,
+      files: sourceFiles,
+    });
+  }, []);
 };

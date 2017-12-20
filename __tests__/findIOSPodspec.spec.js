@@ -26,7 +26,7 @@ describe('findIOSPodspec.js', () => {
     expect(res[1].path.endsWith(`/${name}/ios/P2.podspec`)).toBe(true);
   });
 
-  it('must return object with source files', () => {
+  it('must return array with source files', () => {
     const name = 'foundation-test';
     const pkgPath = path.resolve('node_modules', name);
 
@@ -37,10 +37,9 @@ describe('findIOSPodspec.js', () => {
     mockFile('project.pbxproj', projPath);
 
     const res = findIOSPodspec(name);
-    expect(res).toHaveProperty('sourceFiles');
-    expect(res.sourceFiles).toHaveLength(1);
-    const f = res.sourceFiles[0].files;
-    const p = res.sourceFiles[0].path;
+    expect(res).toHaveLength(1);
+    const f = res[0].files;
+    const p = res[0].path;
     expect(p.endsWith('/node_modules/foundation-test')).toBe(true);
     expect(f).toHaveLength(6);
   });
