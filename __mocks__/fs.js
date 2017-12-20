@@ -32,8 +32,8 @@ fs.readFileSync = (path, options) => {
 };
 
 fs.existsSync = (path) => {
-  if (mockedContent[path]) {
-    return mockedContent[path];
+  if (mockedContent[path] || mockedDirectory[path]) {
+    return true;
   }
 
   return origExists(path);
