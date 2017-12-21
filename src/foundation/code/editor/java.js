@@ -1,4 +1,3 @@
-const fs = require('fs');
 const escapeRegex = require('./_escapeRegex');
 
 const importRegex = h => new RegExp(`^import\\s+${escapeRegex(h)};`);
@@ -9,12 +8,11 @@ const methodBodyRegex = (returnType, name, params, modifier) => {
     `\\s*${escapeRegex(p.type)}\\s*(\\w+)\\s*`
   )).join(',');
   const end = '\\)\\s*\\{';
-  console.log(`/${start}${mid}${end}/m`)
   return new RegExp(`${start}${mid}${end}`, 'm');
 };
 
-module.exports = function createJavaHandler(sourceFile) {
-  let content = fs.readFileSync(sourceFile).toString('utf-8');
+module.exports = function createJavaHandler(sourceContent) {
+  let content = sourceContent;
   const insertContent = (pos, insert) => {
     content = content.substring(0, pos) + insert + content.substr(pos);
   };
