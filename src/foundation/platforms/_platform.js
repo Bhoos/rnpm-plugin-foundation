@@ -12,16 +12,19 @@ module.exports = (name, platform) => {
     app.getConstants = () => constants;
     app.getSubModules = () => subModules;
 
+    // Initialize the platform
+    platform.init(project, app, dependencies);
+
     return {
       getName: () => name,
 
       updateProject: () => {
-        platform.updateProject(project, app, dependencies);
+        platform.updateProject();
       },
 
       hook: () => {
         dependencies.forEach((d) => {
-          platform.hook(project, app, d);
+          platform.hook(d);
         });
       },
     };
