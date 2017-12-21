@@ -7,7 +7,7 @@ const findIOSPodspec = require('./findIOSPodspec');
 
 const defaultAndroidHook = (app, dependency) => {
   // Register the package
-  dependency.reactPackages.forEach((rp) => {
+  dependency.getAndroidPackages().forEach((rp) => {
     app.mainApplication.addImport(rp.getFullName());
     app.mainApplication.addPackage(rp.getSimpleName());
   });
