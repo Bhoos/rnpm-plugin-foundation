@@ -42,7 +42,7 @@ class LockFile {
       dependencies: Object.keys(this.dependencies).map(k => this.dependencies[k]),
     };
 
-    fs.writeFileSync(this.file, JSON.stringify(data));
+    fs.writeFileSync(this.file, JSON.stringify(data, '', 2));
   }
 }
 
