@@ -19,6 +19,10 @@ module.exports = (platform) => {
 
   // the filter method
   return (tree, branch) => {
+    if (!tree) {
+      return {};
+    }
+
     const obj = tree[branch];
     if (typeof obj !== 'object' || obj === null) {
       return {};
