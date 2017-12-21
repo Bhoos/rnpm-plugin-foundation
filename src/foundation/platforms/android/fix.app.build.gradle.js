@@ -15,7 +15,7 @@ module.exports = function fixAppBuildGradle(filePath) {
 
   // Do not add the snipped if it already exists
   const regex = new RegExp(escapeRegex(comments.signature), 'm');
-  if (regex.text(content)) {
+  if (regex.test(content)) {
     return;
   }
 
