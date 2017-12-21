@@ -1,0 +1,13 @@
+
+    {{signature}}
+    {{blockStart}}
+
+    // Get information from the lock file
+    def lockFile = new File(rootProject.projectDir, '../../foundation.lock')
+
+    def json = new groovy.json.JsonSlurper().parseText(lockFile.text);
+
+    json.dependencies.androind.each { name ->
+        compile (project':' + name))
+    }
+    {{blockEnd}}
