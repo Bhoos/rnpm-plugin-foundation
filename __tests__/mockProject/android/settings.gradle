@@ -1,3 +1,18 @@
 rootProject.name = 'MockProject'
 
+
+// Automatically added by rnpm-plugin-foundation
+// BEGIN - rnpm-plugin-foundation
+// Get information from the lock file
+def lockFile = new File(rootProject.projectDir, '../foundation.lock')
+
+// The lock file stores information in JSON format
+def json = new groovy.json.JsonSlurper().parseText(lockFile.text);
+
+json.dependencies.android.each { name ->
+  def lib = ':' + name
+  include lib
+  project(lib).projectDir = new File(rootProject.projectDir, '../node_modules/' + name + '/android')
+}
+// END - rnpm-plugin-foundation
 include ':app'

@@ -1,1 +1,4 @@
 foundation.lock
+
+# Need to include node_modules for testing purpose
+!node_modules

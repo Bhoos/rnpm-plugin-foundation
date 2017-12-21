@@ -2,4 +2,17 @@ dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
+
+    // Automatically added by rnpm-plugin-foundation - auto include libs
+    // BEGIN - rnpm-plugin-foundation
+
+    // Get information from the lock file
+    def lockFile = new File(rootProject.projectDir, '../../foundation.lock')
+
+    def json = new groovy.json.JsonSlurper().parseText(lockFile.text);
+
+    json.dependencies.androind.each { name ->
+        compile (project':' + name))
+    }
+    //END - rnpm-plugin-foundation
 }
