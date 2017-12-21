@@ -1,0 +1,9 @@
+{
+  "name": "mock-project",
+  "version": "0.0.1",
+  "dependencies": {
+    "react-native-fbsdk": "0.6.3",
+    "react-native": "0.51.0",
+    "react": "16.2.0"
+  }
+}
