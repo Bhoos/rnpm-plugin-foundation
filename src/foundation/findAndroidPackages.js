@@ -21,7 +21,7 @@ module.exports = function findAndroidPackages(libName) {
     return [];
   }
 
-  const manifest = fs.readFileSync(manifestPath);
+  const manifest = fs.readFileSync(manifestPath).toString('utf-8');
   const match = /<manifest\s+[\s\S]*package\s*=\s*"([\w.]*)"/.exec(manifest);
   if (match !== null) {
     const packagePath = match[1].split('.').join('/');
@@ -32,7 +32,7 @@ module.exports = function findAndroidPackages(libName) {
       const javaFile = path.resolve(folder, f);
       try {
         const javaSource = fs.readFileSync(javaFile).toString();
-        return /.*class\s+(\w*)\s+extends\s+ReactPackage/.test(javaSource);
+        return /.*class\s+(\w*)\s+implements\s+ReactPackage/.test(javaSource);
       } catch (e) {
         return false;
       }
