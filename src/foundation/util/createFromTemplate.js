@@ -11,5 +11,5 @@ module.exports = function createFromTemplate(file, dict, target) {
     fs.writeFileSync(target, fileData, 'utf-8');
   }
 
-  return target;
+  return fileData;
 };
