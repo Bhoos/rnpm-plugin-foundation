@@ -29,7 +29,7 @@ module.exports = function foundation(args, config) {
   const platFormProcessors = platforms.map(platform => platform(project, pkg, dependencies));
 
   // Execute all the stages for all the platforms;
-  const stages = ['updateProject', 'hook'];
+  const stages = ['updateProject', 'hook', 'flush'];
   stages.forEach((stage) => {
     platFormProcessors.forEach((p) => {
       p[stage]();
