@@ -12,4 +12,8 @@ Description: Load podspecs from the lock file
   pod "React", :path => "../node_modules/react-native"
 
   # Search for dependencies and include them as well
-  foundation.
+  foundation.dependencies.each do |d|
+    d.podspecs.each do |p|
+      pod p.name, :path => p.path, :subspecs => p.subspecs
+    end
+  end
