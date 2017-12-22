@@ -58,7 +58,6 @@ ${commentPrefix} BLOCK END [${id}]
   return {
     apply(file, dict, insert) {
       function write(content) {
-        console.log('Write ---', content, '---');
         fs.writeFileSync(file, content);
       }
       const content = fs.readFileSync(file).toString('utf-8');
