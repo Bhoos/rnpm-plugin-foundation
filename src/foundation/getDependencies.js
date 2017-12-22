@@ -9,19 +9,27 @@ const createFromTemplate = require('./util/createFromTemplate');
 const getLibInfo = require('./getLibInfo');
 
 function getSubModules(pkg, lib) {
+  // special case for 'react-native' where we need to append to
+  // basic subspecs
+  const res = lib !== 'React' ? [] : [
+    'Core', 'RCTActionSheet', 'RCTBlob', 'RCTAnimation',
+    'RCTGeolocation', 'RCTImage', 'RCTNetwork', 'RCTSettings',
+    'RCTText', 'RCTVibration', 'RCTWebSocket',
+  ];
+
   if (isObject(pkg.foundation)
       && isObject(pkg.foundation['sub-modules'])) {
     const r = pkg.foundation['sub-modules'][lib];
     if (Array.isArray(r)) {
-      return r;
+      return res.concat(r);
     }
 
     if (isObject(r)) {
-      return Object.keys(r);
+      return res.concat(Object.keys(r));
     }
   }
 
-  return [];
+  return res;
 }
 
 /**
@@ -44,7 +52,7 @@ module.exports = function getDependencies(pkg) {
     }
 
     // Create a podspec file within the pods folder and use it
-    const podspecs = lib.iosPods.map((pod) => {
+    const podspecs = lib.iosPods.map((pod, index, array) => {
       if (pod.files) {
         // Make sure we have a "Local Podspecs" folder
         mkdirp.sync(localPodspecs);
@@ -66,10 +74,23 @@ module.exports = function getDependencies(pkg) {
         return {
           name: dPkg.name,
           path: podspecFile,
+          // Since there aren't any subspecs defined, there is no point for this
+          // subspecs: getSubModules(pkg, dPkg.name),
         };
       }
 
-      return pod;
+      const res = {
+        name: pod.name,
+        path: pod.path,
+        subspecs: getSubModules(pkg, pod.name),
+      };
+
+      // In case there weren't any submodules defined for the pod name
+      // see if we could find it useing the package name
+      if (index === 0 && res.subspecs.length === 0 && res.name !== dPkg.name) {
+        res.subspecs = getSubModules(pkg, dPkg.name);
+      }
+      return res;
     });
 
     libraries.push({
@@ -81,7 +102,6 @@ module.exports = function getDependencies(pkg) {
       package: dPkg,
       podspecs,
       androidPackages: lib.androidPackages,
-      subspecs: getSubModules(pkg, dPkg.name),
     });
   });
 
