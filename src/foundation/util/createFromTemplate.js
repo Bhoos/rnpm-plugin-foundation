@@ -3,7 +3,7 @@ const path = require('path');
 
 module.exports = function createFromTemplate(file, dict, target) {
   const data = fs.readFileSync(path.resolve(__dirname, 'templates', file)).toString('utf-8');
-  const fileData = data.replace(/{{(\w*)}}/g, (match, key) => (
+  const fileData = data.replace(/{{([\w.]*)}}/g, (match, key) => (
     dict[key]
   ));
 
