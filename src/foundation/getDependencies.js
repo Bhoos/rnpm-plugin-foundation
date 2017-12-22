@@ -73,6 +73,11 @@ module.exports = function getDependencies(pkg) {
     });
 
     libraries.push({
+      runHook: (platform, app) => {
+        if (lib.hook[platform]) {
+          lib.hook[platform](app, lib);
+        }
+      },
       package: dPkg,
       podspecs,
       androidPackages: lib.androidPackages,

@@ -7,21 +7,26 @@ const findIOSPodspec = require('./findIOSPodspec');
 
 const defaultAndroidHook = (app, dependency) => {
   // Register the package
-  dependency.getAndroidPackages().forEach((rp) => {
-    app.mainApplication.addImport(rp.getFullName());
-    app.mainApplication.addPackage(rp.getSimpleName());
+  dependency.androidPackages.forEach((rp) => {
+    app.code.mainApplication.addImport(rp.fullName);
+    app.code.mainApplication.addPackage(rp.packageName);
   });
 };
 
 function attachHook(library, hook) {
+  if (!library.hook) {
+    // eslint-disable-next-line no-param-reassign
+    library.hook = {};
+  }
+
   if (hook.ios) {
     // eslint-disable-next-line no-param-reassign
-    library.iosHook = hook.ios;
+    library.hook.ios = hook.ios;
   }
 
   if (hook.android) {
     // eslint-disable-next-line no-param-reassign
-    library.androidHook = hook.android;
+    library.hook.android = hook.android;
   }
 
   return library;
@@ -29,8 +34,7 @@ function attachHook(library, hook) {
 
 module.exports = function getLibHook(pkg) {
   const library = {
-    iosHook: null,
-    androidHook: null,
+    hook: {},
     androidPackages: findAndroidPackages(pkg.name),
     iosPods: findIOSPodspec(pkg.name),
   };
@@ -61,11 +65,11 @@ module.exports = function getLibHook(pkg) {
   // Attach the default hooks (required only in case of android)
   // There is nothing to be done by default in case of ios
   if (library.androidPackages.length > 0) {
-    library.androidHook = defaultAndroidHook;
+    attachHook(library, { android: defaultAndroidHook });
   }
 
   // If there isn't anything to hook for, return null;
-  if (library.iosHook || library.androidHook || library.iosPods.length > 0) {
+  if (library.hook.ios || library.hook.android || library.iosPods.length > 0) {
     return library;
   }
 
