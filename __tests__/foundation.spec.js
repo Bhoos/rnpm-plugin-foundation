@@ -1,5 +1,23 @@
+const fs = require('fs');
 const path = require('path');
+const os = require('os');
+const mkdirp = require('mkdirp');
+
 const foundation = require('../src/foundation');
+
+function recursiveCopy(target, source) {
+  const files = fs.readdirSync(source);
+  files.forEach((f) => {
+    const cur = path.resolve(source, f);
+    const t = path.resolve(target, f);
+    if (fs.lstatSync(cur).isDirectory()) {
+      fs.mkdirSync(t);
+      recursiveCopy(t, cur);
+    } else {
+      fs.copyFileSync(cur, t);
+    }
+  });
+}
 
 describe('react-native foundation command', () => {
   let cwd = '';
@@ -14,7 +32,15 @@ describe('react-native foundation command', () => {
   });
 
   it('validate with the mock project', () => {
-    process.chdir(path.resolve(__dirname, 'mockProject'));
+    // Create a temporary folder to clone the mock project
+    const tmpDir = path.resolve(os.tmpdir(), 'foundation');
+    mkdirp.sync(tmpDir);
+
+    const tmpFolder = fs.mkdtempSync(`${tmpDir}${path.sep}`);
+
+    console.log('Creating project clone at', `${tmpFolder}`);
+    recursiveCopy(tmpFolder, path.resolve(__dirname, 'mockProject'));
+    process.chdir(tmpFolder);
 
     foundation([], {
       getProjectConfig: () => ({
