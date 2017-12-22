@@ -1,27 +1,28 @@
 module.exports = {
-  android: (config) => {
-    config.mainApplication.import('com.facebook.CallbackManager');
-    config.mainApplication.import('com.facebook.FacebookSdk');
+  android: ({ code }) => {
+    code.mainApplication.import('com.facebook.CallbackManager');
+    code.mainApplication.import('com.facebook.FacebookSdk');
+    code.mainApplication.import('com.facebook.reactnative.facebooksdk.FBSDKPackage');
 
-    config.mainApplication.addProperty(
+    code.mainApplication.addProperty(
       'protected static',
       'CallbackManager',
       'callbackManager',
       'CallbackManager.Factory.create()'
     );
 
-    config.mainApplication.addReactPackage('FBSDKPackage(mCallbackManager)');
-    config.mainApplication.onCreate('FacebookSdk', () => (
+    code.mainApplication.addReactPackage('FBSDKPackage(callbackManager)');
+    code.mainApplication.onCreate('FacebookSdk', () => (
       'sdkInitialize(getApplicationContext())'
     ));
 
-    config.mainActivity.onActivityResult('MainApplication.callbackManager()');
+    code.mainActivity.onActivityResult('MainApplication.callbackManager');
   },
 
-  ios: (config) => {
-    config.appDelegate.import('<FBSDKCoreKit/FBSDKCoreKit.h>');
-    config.appDelegate.didFinishLaunchingWithOptions('[FBSDKApplicationDelegate sharedInstance');
-    config.appDelegate.openURL('[FBSDKApplicationDelegate sharedInstance]', (app, url, options) => `
+  ios: ({ code }) => {
+    code.appDelegate.import('<FBSDKCoreKit/FBSDKCoreKit.h>');
+    code.appDelegate.didFinishLaunchingWithOptions('[FBSDKApplicationDelegate sharedInstance');
+    code.appDelegate.openURL('[FBSDKApplicationDelegate sharedInstance]', (app, url, options) => `
       application:${app}
       openURL:${url}
       sourceApplication:${options}[UIApplicationOpenURLOptionsSourceApplicationKey]
