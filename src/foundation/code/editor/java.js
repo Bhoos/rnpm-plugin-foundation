@@ -13,8 +13,19 @@ const methodBodyRegex = (returnType, name, params, modifier) => {
 
 module.exports = function createJavaHandler(sourceContent) {
   let content = sourceContent;
+  let headerInsertPos = 0;
+  let propInsertPos = 0;
+
   const insertContent = (pos, insert) => {
     content = content.substring(0, pos) + insert + content.substr(pos);
+
+    if (pos < propInsertPos) {
+      propInsertPos += insert.length;
+    }
+
+    if (pos < headerInsertPos) {
+      headerInsertPos += insert.length;
+    }
   };
 
   function getMethodBody(startPos) {
@@ -65,9 +76,6 @@ module.exports = function createJavaHandler(sourceContent) {
 
     return null;
   }
-
-  let headerInsertPos = 0;
-  let propInsertPos = 0;
 
   const rClass = /^public\s+class\s+[^{]*\{/mg;
   if (rClass.exec(content) !== null) {
