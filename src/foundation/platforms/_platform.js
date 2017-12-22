@@ -4,16 +4,12 @@ const flatten = require('../util/flatten');
 module.exports = (name, platform) => {
   const platformFilter = filter(platform);
   return (project, pkg, dependencies) => {
-    // Get platform specific values from the pkg
-    const app = platformFilter(pkg.foundation, 'app');
-    const constants = flatten(platformFilter(pkg.foundation, 'constants'));
-    const subModules = platformFilter(pkg.foundation, 'sub-modules');
-
-    app.getConstants = () => constants;
-    app.getSubModules = () => subModules;
-
     // Initialize the platform
-    platform.init(project, app, dependencies);
+    const app = platform.init(project, {
+      config: platformFilter(pkg.foundation, 'app'),
+      constants: platformFilter(pkg.foundation, 'constants'),
+      subModules: platformFilter(pkg.foundation, 'sub-modules'),
+    }, dependencies);
 
     return {
       getName: () => name,
@@ -24,9 +20,11 @@ module.exports = (name, platform) => {
 
       hook: () => {
         dependencies.forEach((d) => {
-          platform.hook(d);
+          d.runHook(name, app);
         });
       },
+
+      flush: () => platform.flush(app),
     };
   };
 };

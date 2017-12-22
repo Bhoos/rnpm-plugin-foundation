@@ -1,10 +1,12 @@
 const fs = require('fs');
 
-const fixSettingsGradle = require('./fix.settings.gradle');
-const fixAppBuildGradle = require('./fix.app.build.gradle');
+const createCodeSnippet = require('../../util/createCodeSnippet');
 
 const generateMainApplication = require('../../code/MainApplication.java');
 const generateMainActivity = require('../../code/MainActivity.java');
+
+const settingsGradle = createCodeSnippet('settings.gradle', '//');
+const appBuildGradle = createCodeSnippet('app.build.gradle', '    //');
 
 module.exports = {
   init({ android }, app, dependencies) {
@@ -13,18 +15,34 @@ module.exports = {
 
     this.settingsGradlePath = android.settingsGradlePath;
     this.buildGradlePath = android.buildGradlePath;
-    this.mainApplication = generateMainApplication(fs.readFileSync(android.mainFilePath).toString('utf-8'));
     const mainActivityPath = android.mainFilePath.replace('MainApplication', 'MainActivity');
-    this.mainActivity = generateMainActivity(fs.readFileSync(mainActivityPath));
+
+    this.mainActivityFile = generateMainActivity(mainActivityPath);
+    this.mainApplicationFile = generateMainApplication(android.mainFilePath);
+
+    return Object.assign({
+      code: {
+        mainApplication: this.mainApplicationFile.getGenerator(),
+        mainActivity: this.mainActivityFile.getGenerator(),
+      },
+    }, app);
   },
 
   updateProject() {
     // Change the settings.gradle file
-    fixSettingsGradle(this.settingsGradlePath);
-    fixAppBuildGradle(this.buildGradlePath);
+    settingsGradle.applyBefore(
+      this.settingsGradlePath,
+      /include\s+':app'/m
+    );
+
+    appBuildGradle.applyAfter(
+      this.buildGradlePath,
+      /compile[\s(]+"com.facebook.react:react-native:.*".*\n/m
+    );
   },
 
-  hook(dependency) {
-    // Hook each dependency
+  flush() {
+    this.mainApplicationFile.flush();
+    this.mainActivityFile.flush();
   },
 };

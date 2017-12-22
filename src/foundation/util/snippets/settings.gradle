@@ -1,4 +1,4 @@
-Version: 1
+Version: 2
 --------------------------------------------------------------------------------
 // Get information from the lock file
 def lockFile = new File(rootProject.projectDir, '../foundation.lock')
@@ -6,9 +6,11 @@ def lockFile = new File(rootProject.projectDir, '../foundation.lock')
 // The lock file stores information in JSON format
 def json = new groovy.json.JsonSlurper().parseText(lockFile.text);
 
-json.dependencies.android.each { name ->
-  def lib = ':' + name
-  include lib
-  project(lib).projectDir = new File(rootProject.projectDir, '../node_modules/' + name + '/android')
+json.dependencies.each { dependency ->
+  if (dependency.androidPackages.size() > 0) {
+    def name = dependency.name
+    def lib = ':' + name
+    include lib
+    project(lib).projectDir = new File(rootProject.projectDir, '../node_modules/' + name + '/android')
+  }
 }
-{{blockEnd}}

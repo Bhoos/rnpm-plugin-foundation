@@ -1,0 +1,15 @@
+Version: 3
+Description: Load podspecs from the lock file
+------------------------------------
+  require 'json'
+
+  foundation = JSON.parse(File.read('../foundation.lock'));
+
+  # Include yoga via pod
+  pod "yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
+
+  # Include react-native via pod
+  pod "React", :path => "../node_modules/react-native"
+
+  # Search for dependencies and include them as well
+  foundation.

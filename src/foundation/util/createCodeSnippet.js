@@ -9,7 +9,7 @@ module.exports = function createCodeSnippet(name, commentPrefix) {
   const data = fs.readFileSync(path.resolve(__dirname, 'snippets', name)).toString('utf-8');
 
   // Search for header separator
-  const match = /^--------------------------------------------------------------------------------$/m.exec(data);
+  const match = /^[-]{3,}$/m.exec(data);
   const snippet = match === null ? data : data.substr(match.index + match[0].length);
   const header = match === null ? '' : data.substring(0, match.index);
   const headers = {};
@@ -95,7 +95,7 @@ ${commentPrefix} BLOCK END [${id}]
       this.apply(file, dict, (source, part) => {
         const m = regex.exec(source);
         if (m === null) {
-          throw new Error(`Could not update code snippet for ${name} at ${file}`);
+          throw new Error(`Could not find \`${regex}\` in '${file}'`);
         }
         return insertString(source, m.index + m[0].length, part);
       });
@@ -105,7 +105,7 @@ ${commentPrefix} BLOCK END [${id}]
       this.apply(file, dict, (source, part) => {
         const m = regex.exec(source);
         if (m === null) {
-          throw new Error(`Could not update code snippet for ${name} at ${file}`);
+          throw new Error(`Could not find \`${regex}\` in '${file}'`);
         }
         return insertString(source, m.index, part);
       });
