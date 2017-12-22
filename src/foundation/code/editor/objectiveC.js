@@ -48,7 +48,7 @@ module.exports = function createCodeGenerator(sourceContent) {
             let params = ids.map(id => id.param);
             if (match) {
               // eslint-disable-next-line
-              const body = match[1];
+              const body = match[match.length - 1];
               // Search for the caller within the body, in which case, we can assume the code
               // has been added
               if (body.includes(caller)) {
