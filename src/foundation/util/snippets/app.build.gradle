@@ -1,0 +1,14 @@
+Version: 7
+Description: Iterate through the foundation lock file to compile android dependencies
+--------------------------------------------------------------------------------
+    // Get information from the lock file
+    def lockFile = new File(rootProject.projectDir, '../../foundation.lock')
+
+    def json = new groovy.json.JsonSlurper().parseText(lockFile.text);
+
+    json.dependencies.each { dependency ->
+        // Only add the project if it consists of ReactPackages
+        if (dependency.androidPackages.size() > 0) {
+            compile (project':' + name))
+        }
+    }

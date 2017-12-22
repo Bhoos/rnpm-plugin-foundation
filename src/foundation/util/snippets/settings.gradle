@@ -1,6 +1,5 @@
-
-{{signature}}
-{{blockStart}}
+Version: 1
+--------------------------------------------------------------------------------
 // Get information from the lock file
 def lockFile = new File(rootProject.projectDir, '../foundation.lock')
 
