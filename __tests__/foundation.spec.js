@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const mkdirp = require('mkdirp');
+const rimraf = require('rimraf');
 
+const flatten = require('../src/foundation/util/flatten');
 const foundation = require('../src/foundation');
 
 function recursiveCopy(target, source) {
@@ -33,10 +34,9 @@ describe('react-native foundation command', () => {
 
   it('validate with the mock project', () => {
     // Create a temporary folder to clone the mock project
-    const tmpDir = path.resolve(os.tmpdir(), 'foundation');
-    mkdirp.sync(tmpDir);
-
-    const tmpFolder = fs.mkdtempSync(`${tmpDir}${path.sep}`);
+    const tmpFolder = path.resolve(os.tmpdir(), 'foundation');
+    rimraf.sync(tmpFolder);
+    fs.mkdirSync(tmpFolder);
 
     console.log('Creating project clone at', `${tmpFolder}`);
     recursiveCopy(tmpFolder, path.resolve(__dirname, 'mockProject'));
@@ -54,6 +54,29 @@ describe('react-native foundation command', () => {
           pbxprojPath: path.resolve('ios', 'project.pbxproj'),
         },
       }),
+    });
+
+    // Check all the files to match for the snapshot
+    const filesToCheck = {
+      'foundation.lock': true,
+      android: {
+        'settings.gradle': true,
+        app: {
+          'build.gradle': true,
+          'MainActivity.java': true,
+          'MainApplication.java': true,
+        },
+      },
+      ios: {
+        'project.pbxproj': true,
+        MockProject: {
+          'AppDelegate.m': true,
+        },
+      },
+    };
+
+    Object.keys(flatten(filesToCheck, path.sep)).forEach((f) => {
+      expect(fs.readFileSync(path.resolve(tmpFolder, f)).toString('utf-8')).toMatchSnapshot();
     });
   });
 });
