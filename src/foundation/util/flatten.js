@@ -5,7 +5,7 @@ module.exports = function flatten(object, separator) {
       const p = prefix && `${prefix}${separator}`;
       Object.keys(value).forEach((key) => {
         const k = `${p}${key}`;
-        res[k] = recurse(value[key], `${k}`);
+        recurse(value[key], `${k}`);
       });
     } else {
       res[prefix] = value;
