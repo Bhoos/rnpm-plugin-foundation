@@ -1,6 +1,7 @@
+const fs = require('fs');
 const escapeRegex = require('./_escapeRegex');
 
-const importRegex = h => new RegExp(`^import\\s+${escapeRegex(h)};`);
+const importRegex = h => new RegExp(`^import\\s+${escapeRegex(h)};`, 'm');
 
 const methodBodyRegex = (returnType, name, params, modifier) => {
   const start = `^\\s*${escapeRegex(modifier)}\\s+${escapeRegex(returnType)}\\s+${escapeRegex(name)}\\s*\\(`;
@@ -11,8 +12,9 @@ const methodBodyRegex = (returnType, name, params, modifier) => {
   return new RegExp(`${start}${mid}${end}`, 'm');
 };
 
-module.exports = function createJavaHandler(sourceContent) {
-  let content = sourceContent;
+module.exports = function createJavaHandler(file) {
+  let content = fs.readFileSync(file).toString('utf-8');
+
   let headerInsertPos = 0;
   let propInsertPos = 0;
 
@@ -128,6 +130,8 @@ module.exports = function createJavaHandler(sourceContent) {
     getGenerator: () => generator,
 
     getContent: () => content,
+
+    flush: () => fs.writeFileSync(file, content),
 
     addMethod(name, modifier, returnType, returnValue = null, override = true) {
       const params = [];

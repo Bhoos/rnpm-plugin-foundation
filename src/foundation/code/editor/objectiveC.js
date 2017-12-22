@@ -1,3 +1,4 @@
+const fs = require('fs');
 const escapeRegex = require('./_escapeRegex');
 
 const importRegex = h => new RegExp(`^\\s*#import\\s*${escapeRegex(h)}`, 'm');
@@ -10,8 +11,8 @@ const methodBodyRegex = (returnType, ids) => {
   return new RegExp(`${start}${mid}${end}`, 'm');
 };
 
-module.exports = function createCodeGenerator(sourceContent) {
-  let content = sourceContent;
+module.exports = function createCodeGenerator(file) {
+  let content = fs.readFileSync(file).toString('utf-8');
 
   let headerInsertPos = 0;
 
@@ -36,6 +37,8 @@ module.exports = function createCodeGenerator(sourceContent) {
     getGenerator: () => codeGenerator,
 
     getContent: () => content,
+
+    flush: () => fs.writeFileSync(file, content),
 
     addMethod(name, returnType, returnValue = null) {
       const ids = [];
@@ -118,3 +121,4 @@ module.exports = function createCodeGenerator(sourceContent) {
     },
   };
 };
+

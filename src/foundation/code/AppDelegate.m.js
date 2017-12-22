@@ -2,8 +2,8 @@
 
 const iosCodeEditor = require('./editor/objectiveC');
 
-module.exports = function appDelegate(content) {
-  const editor = iosCodeEditor(content);
+module.exports = function appDelegate(file) {
+  const editor = iosCodeEditor(file);
 
   // Use for library initializations
   editor
@@ -66,7 +66,5 @@ module.exports = function appDelegate(content) {
       'applicaiton', 'UIApplication *')(
       'didReceiveLocalNotification', 'UILocalNotification *', 'notification')();
 
-  const res = editor.getGenerator();
-  res.getContent = () => editor.getContent();
-  return res;
+  return editor;
 };

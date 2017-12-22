@@ -2,8 +2,8 @@
 
 const androidCodeEditor = require('./editor/java');
 
-module.exports = function mainActivity(content) {
-  const editor = androidCodeEditor(content);
+module.exports = function mainActivity(file) {
+  const editor = androidCodeEditor(file);
 
   editor
     .addMethod('onActivityResult', 'public', 'void', '', true)(
@@ -11,7 +11,5 @@ module.exports = function mainActivity(content) {
       'resultCode', 'int')(
       'data', 'Intent')();
 
-  const res = editor.getGenerator();
-  res.getContent = () => editor.getContent();
-  return res;
+  return editor;
 };

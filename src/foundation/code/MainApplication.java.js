@@ -2,13 +2,11 @@
 
 const androidCodeEditor = require('./editor/java');
 
-module.exports = function mainApplication(content) {
-  const editor = androidCodeEditor(content);
+module.exports = function mainApplication(file) {
+  const editor = androidCodeEditor(file);
 
   editor
     .addMethod('onCreate', 'public', 'void', '', true)();
 
-  const res = editor.getGenerator();
-  res.getContent = () => editor.getContent();
-  return res;
+  return editor;
 };
