@@ -37,8 +37,7 @@ class LockFile {
       app: this.app,
       appVersion: this.appVersion,
       pluginVersion: this.pluginVersion,
-      rnVersion: this.rnVersion,
-      rnSubModules: this.rnSubModules,
+      constants: this.constants,
       dependencies: Object.keys(this.dependencies).map(k => this.dependencies[k]),
     };
 
@@ -53,9 +52,8 @@ function getData(file) {
     return {
       app: '',
       appVersion: '',
-      rnVersion: '0.0.0',
+      constants: {},
       pluginVersion: PLUGIN.version,
-      rnSubModules: [],
       dependencies: [],
     };
   }
@@ -68,6 +66,7 @@ LockFile.load = (file) => {
   l.app = data.app;
   l.appVersion = data.appVersion;
   l.pluginVersion = data.pluginVersion;
+  l.constants = data.constants;
   l.rnVersion = data.rnVersion;
   l.rnSubModules = data.rnSubModules;
   l.dependencies = data.dependencies.reduce((res, v) => Object.assign(res, {
@@ -77,13 +76,14 @@ LockFile.load = (file) => {
   return l;
 };
 
-LockFile.create = (pkg, libs) => {
+LockFile.create = (pkg, libs, constants) => {
   const lockFile = path.resolve('./foundation.lock');
   const l = new LockFile(lockFile);
 
   l.app = pkg.name;
   l.appVersion = pkg.version;
   l.pluginVersion = PLUGIN.version;
+  l.constants = constants;
 
   libs.forEach((lib) => {
     l.updateDependency(
