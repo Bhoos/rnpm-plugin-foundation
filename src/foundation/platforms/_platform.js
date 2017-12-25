@@ -5,14 +5,23 @@ module.exports = (name, platform) => {
   const platformFilter = filter(platform);
   return (project, pkg, dependencies) => {
     // Initialize the platform
+
+    const config = platformFilter(pkg.foundation, 'app');
+    const constants = platformFilter(pkg.foundation, 'constants');
+    const subModules = platformFilter(pkg.foundation, 'sub-modules');
+
     const app = platform.init(project, {
-      config: platformFilter(pkg.foundation, 'app'),
-      constants: platformFilter(pkg.foundation, 'constants'),
-      subModules: platformFilter(pkg.foundation, 'sub-modules'),
+      config,
+      constants,
+      subModules,
     }, dependencies);
 
     return {
       getName: () => name,
+
+      getConstants: () => constants,
+
+      getConfig: () => config,
 
       updateProject: () => {
         platform.updateProject();
