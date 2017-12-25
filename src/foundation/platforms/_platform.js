@@ -1,5 +1,4 @@
 const filter = require('./_filter');
-const flatten = require('../util/flatten');
 
 module.exports = (name, platform) => {
   const platformFilter = filter(platform);
@@ -7,6 +6,12 @@ module.exports = (name, platform) => {
     // Initialize the platform
 
     const config = platformFilter(pkg.foundation, 'app');
+    if (!config.name) {
+      config.name = pkg.name;
+    }
+    if (!config.version) {
+      config.version = pkg.version;
+    }
     const constants = platformFilter(pkg.foundation, 'constants');
     const subModules = platformFilter(pkg.foundation, 'sub-modules');
 
