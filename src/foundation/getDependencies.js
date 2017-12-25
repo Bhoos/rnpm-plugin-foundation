@@ -102,6 +102,7 @@ module.exports = function getDependencies(pkg) {
       package: dPkg,
       podspecs,
       androidPackages: lib.androidPackages,
+      plist: lib.plist,
     });
   });
 
