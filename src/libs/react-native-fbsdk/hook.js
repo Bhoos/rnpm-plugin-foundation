@@ -2,7 +2,8 @@ module.exports = {
   android: ({ code }) => {
     code.mainApplication.import('com.facebook.CallbackManager');
     code.mainApplication.import('com.facebook.FacebookSdk');
-    code.mainApplication.import('com.facebook.reactnative.facebooksdk.FBSDKPackage');
+    code.mainApplication.import('com.facebook.reactnative.androidsdk.FBSDKPackage');
+    code.mainApplication.import('android.content.Intent');
 
     code.mainApplication.addProperty(
       'protected static',
@@ -12,9 +13,10 @@ module.exports = {
     );
 
     code.mainApplication.addReactPackage('FBSDKPackage(callbackManager)');
-    code.mainApplication.onCreate('FacebookSdk', () => (
-      'sdkInitialize(getApplicationContext())'
-    ));
+    // // Looks like sdkInitialize has been deprecated, no call needed
+    // code.mainApplication.onCreate('FacebookSdk', () => (
+    //   'sdkInitialize(getApplicationContext())'
+    // ));
 
     code.mainActivity.onActivityResult('MainApplication.callbackManager');
   },
