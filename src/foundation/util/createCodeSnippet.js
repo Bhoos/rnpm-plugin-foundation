@@ -93,6 +93,11 @@ ${commentPrefix} BLOCK END [${id}]
 
     applyAfter(file, regex, dict) {
       this.apply(file, dict, (source, part) => {
+        // Insert the snippet at the end
+        if (!regex) {
+          return insertString(source, source.length, part);
+        }
+
         const m = regex.exec(source);
         if (m === null) {
           throw new Error(`Could not find \`${regex}\` in '${file}'`);
