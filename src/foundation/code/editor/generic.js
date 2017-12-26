@@ -11,7 +11,6 @@ module.exports = function createGenericHandler(file) {
     addReplacer: (name, regex) => {
       generator[name] = (...args) => {
         content = content.replace(regex, (match, ...pArgs) => {
-          console.log('Replace for', regex);
           let res = match;
           for (let i = 0; i < args.length; i += 1) {
             res = res.replace(pArgs[i], args[i]);
