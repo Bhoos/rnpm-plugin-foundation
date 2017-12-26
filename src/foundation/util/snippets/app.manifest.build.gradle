@@ -1,0 +1,17 @@
+Version: 1
+Description: Replace all the foundation specific constants in manifest from lock file
+-----------------
+            output.processManifest.doLast {
+                [
+                    output.processManifest.manifestOutputFile,
+                    output.processManifest.instantRunManifestOutputFile
+                ].forEach({ File manifestOutFile ->
+                    if (manifestOutFile.exists()) {
+                        def manifest = manifestOutFile.getText("UTF-8")
+                        // replace all the foundation constants in the manifest
+                        // with value available from the lock file
+                        def content = manifest.replaceAll(/{{([\w.]*)}}) { m -> foundation.constants.android[m] }
+                        manifestOutFile.write(content, "UTF-8")
+                    }
+                })
+            }
