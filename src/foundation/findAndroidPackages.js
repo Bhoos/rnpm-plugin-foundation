@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-
 /**
  * Search within the node_modules folder for the specific library
  * for android files and pick out the name of the class that
@@ -16,7 +15,7 @@ module.exports = function findAndroidPackages(libName) {
   const androidPath = path.resolve('.', 'node_modules', libName, 'android');
 
   // Search for the React Package from the mainfest file
-  const manifestPath = path.resolve(androidPath, 'app/src/main', 'AndroidManifest.xml');
+  const manifestPath = path.resolve(androidPath, 'src/main', 'AndroidManifest.xml');
   if (!fs.existsSync(manifestPath)) {
     return [];
   }
@@ -26,7 +25,7 @@ module.exports = function findAndroidPackages(libName) {
   if (match !== null) {
     const packagePath = match[1].split('.').join('/');
     // Search for java files within the path for the packages class
-    const folder = path.resolve(androidPath, 'app/src/main/java', packagePath);
+    const folder = path.resolve(androidPath, 'src/main/java', packagePath);
     const files = fs.readdirSync(folder);
     return files.filter((f) => {
       const javaFile = path.resolve(folder, f);
