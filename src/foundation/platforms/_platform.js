@@ -12,6 +12,13 @@ module.exports = (name, platform) => {
     if (!config.version) {
       config.version = pkg.version;
     }
+    if (!config.bundleId) {
+      config.bundleId = `com.reactjs.foundation.${config.name}`;
+    }
+    if (!config.buildNumber) {
+      config.buildNumber = 1;
+    }
+
     const constants = platformFilter(pkg.foundation, 'constants');
     const subModules = platformFilter(pkg.foundation, 'sub-modules');
 
