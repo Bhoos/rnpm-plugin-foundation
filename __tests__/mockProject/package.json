@@ -4,6 +4,7 @@
   "dependencies": {
     "react-native-fbsdk": "0.6.3",
     "react-native": "0.51.0",
+    "react-native-udp": "0.2.3",
     "react": "16.2.0"
   },
   "foundation": {
