@@ -73,6 +73,13 @@ module.exports = function getLibHook(pkg) {
       library.plist = plistPath;
     }
 
+    // if there is a manifest file, copy it within the node_modules
+    const manifestPath = path.resolve(__dirname, '..', 'libs', pkg.name, 'AndroidManifest.xml');
+    if (fs.existsSync(manifestPath)) {
+      const dest = path.resolve('node_modules', pkg.name, 'android', 'src', 'main', 'AndroidManifest.xml');
+      fs.copyFileSync(manifestPath, dest);
+    }
+
     // See if we have defined a hook for this particular dependency
     if (preDefinedHooks[pkg.name]) {
       return attachHook(library, preDefinedHooks[pkg.name]);
