@@ -72,7 +72,7 @@ module.exports = function findIOSPodspec(pkgName) {
   // Looks like there aren't any podspec defined for this lib, check if
   // there is a xcodeproj within this package and use it to find the source
   // files
-  const projects = scanXCode(pkgFolder).concat(scan(iosFolder));
+  const projects = scanXCode(pkgFolder).concat(scanXCode(iosFolder));
   // Create a list of source files from the project file
   return projects.reduce((res, prj) => {
     const pbxProj = xcode.project(prj.pbxproj);
