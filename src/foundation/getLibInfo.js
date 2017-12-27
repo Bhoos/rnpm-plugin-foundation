@@ -5,11 +5,11 @@ const preDefinedHooks = require('../libs');
 const findAndroidPackages = require('./findAndroidPackages');
 const findIOSPodspec = require('./findIOSPodspec');
 
-const defaultAndroidHook = (app, dependency) => {
+const defaultAndroidHook = ({ code }, dependency) => {
   // Register the package
   dependency.androidPackages.forEach((rp) => {
-    app.code.mainApplication.addImport(rp.fullName);
-    app.code.mainApplication.addPackage(rp.packageName);
+    code.mainApplication.import(rp.fullName);
+    code.mainApplication.addReactPackage(`${rp.name}()`);
   });
 };
 
