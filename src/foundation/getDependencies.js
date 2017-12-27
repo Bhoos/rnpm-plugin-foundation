@@ -52,7 +52,7 @@ module.exports = function getDependencies(pkg) {
     }
 
     // Create a podspec file within the pods folder and use it
-    const podspecs = lib.iosPods.map((pod, index, array) => {
+    const podspecs = lib.iosPods.map((pod, index) => {
       if (pod.files) {
         // Make sure we have a "Local Podspecs" folder
         mkdirp.sync(localPodspecs);
@@ -66,6 +66,8 @@ module.exports = function getDependencies(pkg) {
             description: dPkg.description,
             license: dPkg.license,
             author: dPkg.author,
+            homepage: dPkg.homepage,
+            source: `{ :${dPkg.repository.type} => "${dPkg.repository.url}"}`,
           },
           FILES: pod.files.map(f => `"${f}"`).join(','),
         };
