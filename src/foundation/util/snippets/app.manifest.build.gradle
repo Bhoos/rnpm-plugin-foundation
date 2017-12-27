@@ -10,7 +10,9 @@ Description: Replace all the foundation specific constants in manifest from lock
                         def manifest = manifestOutFile.getText("UTF-8")
                         // replace all the foundation constants in the manifest
                         // with value available from the lock file
-                        def content = manifest.replaceAll(/\{\{([\w.]*)\}\}) { m -> foundation.constants.android[m] }
+                        def content = manifest.replaceAll(/\{\{([\w.]*)\}\}/) { all, key ->
+                            foundation.constants.android[key]
+                        }
                         manifestOutFile.write(content, "UTF-8")
                     }
                 })
