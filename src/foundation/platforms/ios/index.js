@@ -29,11 +29,11 @@ module.exports = {
     const plistPath = path.resolve(ios.sourceDir, plistFile);
 
     // Update the targetPlist with appropriate app specific constants
-    targetPlist.CFBundleDisplayName = '{{.name}}';
-    targetPlist.CFBundleIdentifier = '{{.bundleId}}';
-    targetPlist.CFBundleName = '{{.name}}';
-    targetPlist.CFBundleShortVersionString = '{{.version}}';
-    targetPlist.CFBundleVersion = '{{.buildNumber}}';
+    targetPlist.CFBundleDisplayName = '{{name}}';
+    targetPlist.CFBundleIdentifier = '{{bundleId}}';
+    targetPlist.CFBundleName = '{{name}}';
+    targetPlist.CFBundleShortVersionString = '{{version}}';
+    targetPlist.CFBundleVersion = '{{buildNumber}}';
 
     dependencies.forEach((d) => {
       if (d.plist) {
