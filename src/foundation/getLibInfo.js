@@ -49,6 +49,18 @@ module.exports = function getLibHook(pkg) {
       }
     }
 
+    // The library may want to include the android manifest file separately
+    // for the foundation plugin
+    // if there is a manifest file, copy it within the node_modules
+    if (pkg.foundation.manifest) {
+      const manifestPath = path.resolve('.', 'node_modules', pkg.name, pkg.foundation.manifest);
+      if (fs.existsSync(manifestPath)) {
+        const dest = path.resolve('node_modules', pkg.name, 'android', 'src', 'main', 'AndroidManifest.xml');
+        fs.copyFileSync(manifestPath, dest);
+      }
+    }
+
+
     // Check for hook
     if (pkg.foundation.hook) {
       const hookPath = path.resolve('.', 'node_modules', pkg.name, pkg.foundation.hook);
