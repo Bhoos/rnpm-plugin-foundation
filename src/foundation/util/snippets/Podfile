@@ -1,19 +1,26 @@
-Version: 3
+Version: 1
 Description: Load podspecs from the lock file
 ------------------------------------
   require 'json'
 
   foundation = JSON.parse(File.read('../foundation.lock'));
+  # Update the plist file to replace all the constant values from the lock file
+  plist = File.read('./RNFoundation-Info.plist').gsub(/\{\{([\w.]*)\}\}/m) do |match|
+    foundation['constants']['ios'][$1]
+  end
+
+  File.write('./RNFoundation-Info.plist', plist);
 
   # Include yoga via pod
   pod "yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
 
-  # Include react-native via pod
-  pod "React", :path => "../node_modules/react-native"
-
   # Search for dependencies and include them as well
-  foundation.dependencies.each do |d|
-    d.podspecs.each do |p|
-      pod p.name, :path => p.path, :subspecs => p.subspecs
+  foundation['dependencies'].each do |d|
+    d['podspecs'].each do |p|
+      if (p['subspecs'] && p['subspecs'].size > 0)
+        pod p['name'], :path => p['path'], :subspecs => p['subspecs']
+      else
+        pod p['name'], :path => p['path']
+      end
     end
   end
