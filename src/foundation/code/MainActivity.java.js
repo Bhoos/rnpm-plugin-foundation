@@ -11,5 +11,9 @@ module.exports = function mainActivity(file) {
       'resultCode', 'int')(
       'data', 'Intent')();
 
+  editor
+    .addMethod('onWindowFocusChanged', 'public', 'void', '', true)(
+      'hasFocus', 'boolean')();
+
   return editor;
 };
