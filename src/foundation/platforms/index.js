@@ -1,9 +1,14 @@
 const ios = require('./ios');
 const android = require('./android');
 
+const platforms = require('./platforms');
 const platform = require('./_platform');
 
-module.exports = [
-  platform('ios', ios),
-  platform('android', android),
-];
+const processors = {
+  ios,
+  android,
+};
+
+
+module.exports = platforms.map(p => platform(p, processors[p]));
+

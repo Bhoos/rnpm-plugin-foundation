@@ -5,6 +5,7 @@ const createCodeSnippet = require('../../util/createCodeSnippet');
 const generateMainApplication = require('../../code/MainApplication.java');
 const generateMainActivity = require('../../code/MainActivity.java');
 const generateAppBuildGradle = require('../../code/app.build.gradle');
+const generateManifestXml = require('../../code/AndroidManifest.xml');
 
 const settingsGradle = createCodeSnippet('settings.gradle', '//');
 const projectGradle = createCodeSnippet('project.build.gradle', '//');
@@ -12,6 +13,8 @@ const projectGradle = createCodeSnippet('project.build.gradle', '//');
 const appDeclarationBuildGradle = createCodeSnippet('app.declaration.build.gradle', '//');
 const appDependenciesBuildGradle = createCodeSnippet('app.dependencies.build.gradle', '    //');
 const appManifestBuildGradle = createCodeSnippet('app.manifest.build.gradle', '            //');
+
+const fullScreenCode = createCodeSnippet('fullScreen.java', '    //');
 
 module.exports = {
   init({ android }, app, dependencies) {
@@ -23,10 +26,26 @@ module.exports = {
     this.buildGradlePath = android.buildGradlePath;
     const mainActivityPath = android.mainFilePath.replace('MainApplication', 'MainActivity');
 
+    this.mainActivityPath = mainActivityPath;
     this.mainActivityFile = generateMainActivity(mainActivityPath);
     this.mainApplicationFile = generateMainApplication(android.mainFilePath);
-
     this.appBuildGradle = generateAppBuildGradle(android.buildGradlePath);
+
+    // Check for app configuration (fullScreen, orientation, etc)
+    if (app.config.fullScreen) {
+      // Make sure there is a onWindowFocusChanged method in MainActivity
+      this.mainActivityFile.getGenerator().onWindowFocusChanged(null);
+    }
+
+    // Include the android:screenOrientation attribute to the activity tag
+    this.manifestPath = android.manifestPath;
+    this.manifestFile = generateManifestXml(this.manifestPath);
+
+    this.manifestFile.getGenerator().addAttribute(
+      'activity',
+      'android:screenOrientation',
+      app.config.orientation ? app.config.orientation : 'unspecified'
+    );
 
     return Object.assign({
       code: {
@@ -70,5 +89,15 @@ module.exports = {
   flush() {
     this.mainApplicationFile.flush();
     this.mainActivityFile.flush();
+    this.manifestFile.flush();
+
+    if (this.app.config.fullScreen) {
+      // Add the code snippet
+      console.log(this.mainActivityPath);
+      fullScreenCode.applyAfter(
+        this.mainActivityPath,
+        /super\.onWindowFocusChanged\(hasFocus\);\s*\n/m
+      );
+    }
   },
 };

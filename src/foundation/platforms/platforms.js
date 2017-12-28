@@ -1,0 +1,4 @@
+module.exports = [
+  'ios',
+  'android',
+];

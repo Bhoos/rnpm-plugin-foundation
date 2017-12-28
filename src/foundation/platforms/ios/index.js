@@ -8,6 +8,8 @@ const createFromTemplate = require('../../util/createFromTemplate');
 
 const generateAppDelegate = require('../../code/AppDelegate.m');
 
+const iosOrientation = require('./orientation');
+
 const podFile = createCodeSnippet('Podfile', '  #');
 
 module.exports = {
@@ -34,6 +36,14 @@ module.exports = {
     targetPlist.CFBundleName = '{{name}}';
     targetPlist.CFBundleShortVersionString = '{{version}}';
     targetPlist.CFBundleVersion = '{{buildNumber}}';
+    if (app.config.fullScreen !== undefined) {
+      targetPlist.UIStatusBarHidden = !!app.config.fullScreen;
+      targetPlist.UIRequiresFullScreen = !!app.config.fullScreen;
+    }
+    if (app.config.orientation) {
+      targetPlist.UISupportedInterfaceOrientations = iosOrientation(app.config.orientation);
+    }
+
 
     dependencies.forEach((d) => {
       if (d.plist) {
@@ -63,6 +73,10 @@ module.exports = {
     Object.keys(config).forEach((k) => {
       const c = config[k];
       if (c && c.buildSettings && c.buildSettings.INFOPLIST_FILE) {
+        if (app.config.supportTablet) {
+          c.buildSettings.TARGETED_DEVICE_FAMILY = '1,2';
+        }
+
         if (c.buildSettings.INFOPLIST_FILE === infoPlist) {
           c.buildSettings.INFOPLIST_FILE = plistFile;
         }

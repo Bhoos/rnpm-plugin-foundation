@@ -1,3 +1,5 @@
+const platforms = require('./platforms');
+
 module.exports = (platform) => {
   function recurse(value) {
     if (Array.isArray(value)) {
@@ -9,8 +11,16 @@ module.exports = (platform) => {
 
       const res = {};
       Object.keys(value).forEach((key) => {
+        // Skip any platform specific keys
+        if (platforms.indexOf(key) >= 0) {
+          return;
+        }
         res[key] = recurse(value[key]);
       });
+
+      if (Object.keys(res).length === 0) {
+        return undefined;
+      }
       return res;
     }
 
