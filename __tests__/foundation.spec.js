@@ -20,6 +20,27 @@ function recursiveCopy(target, source) {
   });
 }
 
+// Check all the files to match for the snapshot
+const filesToCheck = {
+  'foundation.lock': true,
+  android: {
+    'RNFoundation-AndroidManifest.xml': true,
+    'settings.gradle': true,
+    app: {
+      'build.gradle': true,
+      'MainActivity.java': true,
+      'MainApplication.java': true,
+    },
+  },
+  ios: {
+    'RNFoundation-Info.plist': true,
+    'project.pbxproj': true,
+    MockProject: {
+      'AppDelegate.m': true,
+    },
+  },
+};
+
 describe('react-native foundation command', () => {
   let cwd = '';
   beforeAll(() => {
@@ -42,41 +63,24 @@ describe('react-native foundation command', () => {
     recursiveCopy(tmpFolder, path.resolve(__dirname, 'mockProject'));
     process.chdir(tmpFolder);
 
-    foundation([], {
+    return foundation([], {
       getProjectConfig: () => ({
         android: {
-          settingsGradlePath: path.resolve('android/settings.gradle'),
-          buildGradlePath: path.resolve('android/app/build.gradle'),
-          mainFilePath: path.resolve('android/app/MainApplication.java'),
+          sourceDir: path.resolve('android', 'app'),
+          settingsGradlePath: path.resolve('android', 'settings.gradle'),
+          buildGradlePath: path.resolve('android', 'app', 'build.gradle'),
+          mainFilePath: path.resolve('android', 'app', 'MainApplication.java'),
+          manifestPath: path.resolve('android', 'AndroidManifest.xml'),
         },
         ios: {
           sourceDir: path.resolve('ios'),
           pbxprojPath: path.resolve('ios', 'project.pbxproj'),
         },
       }),
-    });
-
-    // Check all the files to match for the snapshot
-    const filesToCheck = {
-      'foundation.lock': true,
-      android: {
-        'settings.gradle': true,
-        app: {
-          'build.gradle': true,
-          'MainActivity.java': true,
-          'MainApplication.java': true,
-        },
-      },
-      ios: {
-        'project.pbxproj': true,
-        MockProject: {
-          'AppDelegate.m': true,
-        },
-      },
-    };
-
-    Object.keys(flatten(filesToCheck, path.sep)).forEach((f) => {
-      expect(fs.readFileSync(path.resolve(tmpFolder, f)).toString('utf-8')).toMatchSnapshot();
+    }).then(() => {
+      Object.keys(flatten(filesToCheck, path.sep)).forEach((f) => {
+        expect(fs.readFileSync(path.resolve(tmpFolder, f)).toString('utf-8')).toMatchSnapshot();
+      });
     });
   });
 });
