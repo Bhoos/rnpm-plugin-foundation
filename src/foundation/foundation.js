@@ -1,5 +1,4 @@
 const fs = require('fs');
-const log = require('npmlog');
 
 const platforms = require('./platforms');
 
@@ -24,26 +23,28 @@ module.exports = function foundation(args, config) {
   const dependencies = getDependencies(pkg);
 
   // Initialize each platform for further processing
-  const platFormProcessors = platforms.map(platform => platform(project, pkg, dependencies));
+  return Promise.all(platforms.map(platform => platform(project, pkg, dependencies)))
+    .then((platFormProcessors) => {
+      const constants = platFormProcessors.reduce((res, p) => {
+        const r = flatten(p.getConstants(), '.');
+        const pconfig = p.getConfig();
 
-  const constants = platFormProcessors.reduce((res, p) => {
-    const r = flatten(p.getConstants(), '.');
-    const pconfig = p.getConfig();
+        Object.assign(r, pconfig);
 
-    Object.assign(r, pconfig);
+        return Object.assign(res, {
+          [p.getName()]: r,
+        });
+      }, {});
 
-    return Object.assign(res, {
-      [p.getName()]: r,
+      // Create the lock file
+      LockFile.create(pkg, dependencies, constants);
+
+      // Execute all the stages for all the platforms;
+      const stages = ['updateProject', 'hook', 'flush'];
+      stages.forEach((stage) => {
+        platFormProcessors.forEach((p) => {
+          p[stage]();
+        });
+      });
     });
-  }, {});
-  // Create the lock file
-  LockFile.create(pkg, dependencies, constants);
-
-  // Execute all the stages for all the platforms;
-  const stages = ['updateProject', 'hook', 'flush'];
-  stages.forEach((stage) => {
-    platFormProcessors.forEach((p) => {
-      p[stage]();
-    });
-  });
 };
