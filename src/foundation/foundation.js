@@ -28,7 +28,7 @@ module.exports = function foundation(args, config) {
 
   const constants = platFormProcessors.reduce((res, p) => {
     const r = flatten(p.getConstants(), '.');
-    const pconfig = flatten(p.getConfig(), '.');
+    const pconfig = p.getConfig();
 
     Object.assign(r, pconfig);
 
