@@ -187,7 +187,12 @@ module.exports = function createJavaHandler(file) {
               method += '\n    boolean handled = false;';
             }
 
-            method += `${call}`;
+            if (caller) {
+              method += `${call}`;
+            } else {
+              method += '\n';
+            }
+
             if (returnValue !== '') {
               method += `\n\n    return ${returnValue === null ? 'handled' : returnValue};`;
             }
@@ -201,27 +206,32 @@ module.exports = function createJavaHandler(file) {
             // Insert the call just before the return
             // The method was found at match.index
             // Seach fro return within the method
-            const method = methodBody;
-            const methodPos = match.index;
-            const ret = /^\s+return.*;/m.exec(method);
-            if (ret) {
-              const insertPos = methodPos + (ret.index);
-              insertContent(insertPos, call);
+            if (caller) {
+              const method = methodBody;
+              const methodPos = match.index;
+              const ret = /^\s+return.*;/m.exec(method);
+              if (ret) {
+                const insertPos = methodPos + (ret.index);
+                insertContent(insertPos, call);
+              }
             }
           } else {
             // Insert the call just after the method signature
             // And after the super call
-            const method = methodBody;
-            const methodPos = match.index;
-            let insertPos = methodPos + match[0].length;
-            const r = /^\s*super\.[^;]+;/m;
+            // eslint-disable-next-line no-lonely-if
+            if (caller) {
+              const method = methodBody;
+              const methodPos = match.index;
+              let insertPos = methodPos + match[0].length;
+              const r = /^\s*super\.[^;]+;/m;
 
-            const sup = r.exec(method);
-            if (sup !== null) {
-              insertPos += sup[0].length + r.lastIndex;
+              const sup = r.exec(method);
+              if (sup !== null) {
+                insertPos += sup[0].length + r.lastIndex;
+              }
+
+              insertContent(insertPos, call);
             }
-
-            insertContent(insertPos, call);
           }
         };
 
