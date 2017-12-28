@@ -4,7 +4,7 @@ exports[`react-native foundation command validate with the mock project 1`] = `
 "{
   \\"app\\": \\"mock-project\\",
   \\"appVersion\\": \\"0.0.1\\",
-  \\"pluginVersion\\": \\"0.0.1\\",
+  \\"pluginVersion\\": \\"0.1.0\\",
   \\"constants\\": {
     \\"ios\\": {
       \\"fb.app.name\\": \\"MockProject\\",
@@ -17,6 +17,9 @@ exports[`react-native foundation command validate with the mock project 1`] = `
     \\"android\\": {
       \\"fb.app.name\\": \\"MockProject\\",
       \\"fb.app.id\\": \\"fakeId\\",
+      \\"metaData\\": {
+        \\"android.maxAspectRatio\\": \\"2.1\\"
+      },
       \\"name\\": \\"mock-project\\",
       \\"version\\": \\"0.0.1\\",
       \\"bundleId\\": \\"com.reactjs.foundation.mock-project\\",
@@ -61,7 +64,8 @@ exports[`react-native foundation command validate with the mock project 1`] = `
             \\"RCTSettings\\",
             \\"RCTText\\",
             \\"RCTVibration\\",
-            \\"RCTWebSocket\\"
+            \\"RCTWebSocket\\",
+            \\"RCTLinking\\"
           ]
         }
       ],
@@ -90,6 +94,35 @@ exports[`react-native foundation command validate with the mock project 1`] = `
 `;
 
 exports[`react-native foundation command validate with the mock project 2`] = `
+"<?xml version=\\"1.0\\" encoding=\\"UTF-8\\" standalone=\\"yes\\"?>
+<manifest xmlns:android=\\"http://schemas.android.com/apk/res/android\\" package=\\"com.marriageapp\\" android:versionCode=\\"1\\" android:versionName=\\"1.0\\">
+  <uses-permission android:name=\\"android.permission.INTERNET\\"/>
+  <uses-permission android:name=\\"android.permission.SYSTEM_ALERT_WINDOW\\"/>
+  <uses-sdk android:minSdkVersion=\\"16\\" android:targetSdkVersion=\\"22\\"/>
+  <application android:name=\\".MainApplication\\" android:allowBackup=\\"true\\" android:label=\\"@string/app_name\\" android:icon=\\"@mipmap/ic_launcher\\" android:theme=\\"@style/AppTheme\\">
+    <activity android:name=\\".MainActivity\\" android:label=\\"@string/app_name\\" android:configChanges=\\"keyboard|keyboardHidden|orientation|screenSize\\" android:windowSoftInputMode=\\"adjustResize\\" android:screenOrientation=\\"landscape\\">
+      <intent-filter>
+        <action android:name=\\"android.intent.action.MAIN\\"/>
+        <category android:name=\\"android.intent.category.LAUNCHER\\"/>
+      </intent-filter>
+    </activity>
+    <activity android:name=\\"com.facebook.react.devsupport.DevSettingsActivity\\"/>
+    <activity android:name=\\"com.facebook.FacebookActivity\\" android:configChanges=\\"keyboard|keyboardHidden|screenLayout|screenSize|orientation\\" android:label=\\"{{fb.app.name}}\\"/>
+    <activity android:name=\\"com.facebook.CustomTabActivity\\" android:exported=\\"true\\">
+      <intent-filter>
+        <action android:name=\\"android.intent.action.VIEW\\"/>
+        <category android:name=\\"android.intent.category.DEFAULT\\"/>
+        <category android:name=\\"android.intent.category.BROWSABLE\\"/>
+        <data android:scheme=\\"fb{{fb.app.id}}\\"/>
+      </intent-filter>
+    </activity>
+    <meta-data android:name=\\"android.maxAspectRatio\\" android:value=\\"2.1\\"/>
+    <meta-data android:name=\\"com.facebook.sdk.ApplicationId\\" android:value=\\"fb{{fb.app.id}}\\"/>
+  </application>
+</manifest>"
+`;
+
+exports[`react-native foundation command validate with the mock project 3`] = `
 "rootProject.name = 'MockProject'
 
 // AUTO-GENERATED rnpm-plugin-foundation:settings.gradle Snippet[00000000-0000-0000-0000-000000000002]<2>
@@ -115,7 +148,7 @@ include ':app'
 "
 `;
 
-exports[`react-native foundation command validate with the mock project 3`] = `
+exports[`react-native foundation command validate with the mock project 4`] = `
 "apply plugin: \\"com.android.application\\"
 
 import com.android.build.OutputFile
@@ -262,32 +295,17 @@ android {
                     output.processManifest.instantRunManifestOutputFile
                 ].forEach({ File manifestOutFile ->
                     if (manifestOutFile.exists()) {
-                        def manifest = manifestOutFile.getText(\\"UTF-8\\")
+                        // Get the manifest content from our generated file
+                        def manifest = new File(rootProject.projectDir, 'RNFoundation-AndroidManifest.xml').text;
                         // replace all the foundation constants in the manifest
                         // with value available from the lock file
                         def content = manifest.replaceAll(/\\\\{\\\\{([\\\\w.]*)\\\\}\\\\}/) { all, key ->
                             foundation.constants.android[key]
                         }
 
-                        // parse the manifest xml for adding configuration values
-                        def xml = new XmlSlurper(false, true).parseText(content);
+                        println content
 
-                        // Include screenOrientation in acitivity tag
-                        if (foundation.constants.android.screenOrientation) {
-                            xml.application.activity[0].@'android:screenOrientation' = foundation.config.screenOrientation
-                        }
-
-                        // Include meta-data tags within application node
-                        if (foundation.constants.android.metaData) {
-                            foundation.constants.android.metaData.each { name, value ->
-                                println \\"appending metaData $name $value\\"
-                                def metaData = new XmlSlurper().parseText(
-                                        \\"<meta-data xmlns:android=\\\\\\"http://schemas.android.com/apk/res/android\\\\\\" android:name=\\\\\\"android.$name\\\\\\" android:value=\\\\\\"$value\\\\\\" />\\"
-                                );
-                                xml.application.appendNode(metaData)
-                            }
-                        }
-                        manifestOutFile.write(groovy.xml.XmlUtil.serialize(xml), \\"UTF-8\\")
+                        manifestOutFile.write(content, \\"UTF-8\\")
                     }
                 })
             }
@@ -330,10 +348,11 @@ task copyDownloadableDepsToLibs(type: Copy) {
 "
 `;
 
-exports[`react-native foundation command validate with the mock project 4`] = `
+exports[`react-native foundation command validate with the mock project 5`] = `
 "package com.marriageapp;
 
 import com.facebook.react.ReactActivity;
+import android.content.Intent;
 
 public class MainActivity extends ReactActivity {
 
@@ -358,7 +377,7 @@ public class MainActivity extends ReactActivity {
 "
 `;
 
-exports[`react-native foundation command validate with the mock project 5`] = `
+exports[`react-native foundation command validate with the mock project 6`] = `
 "package com.marriageapp;
 
 import android.app.Application;
@@ -417,7 +436,91 @@ public class MainApplication extends Application implements ReactApplication {
 "
 `;
 
-exports[`react-native foundation command validate with the mock project 6`] = `
+exports[`react-native foundation command validate with the mock project 7`] = `
+"<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>
+<!DOCTYPE plist PUBLIC \\"-//Apple//DTD PLIST 1.0//EN\\" \\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\">
+<plist version=\\"1.0\\">
+  <dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleDisplayName</key>
+    <string>{{name}}</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>{{bundleId}}</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>{{name}}</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>{{version}}</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleVersion</key>
+    <string>{{buildNumber}}</string>
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+      <string>armv7</string>
+    </array>
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+      <string>UIInterfaceOrientationLandscapeLeft</string>
+      <string>UIInterfaceOrientationLandscapeRight</string>
+      <string>UIInterfaceOrientationPortrait</string>
+    </array>
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <false/>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string/>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSExceptionDomains</key>
+      <dict>
+        <key>localhost</key>
+        <dict>
+          <key>NSExceptionAllowsInsecureHTTPLoads</key>
+          <true/>
+        </dict>
+      </dict>
+    </dict>
+    <key>UIStatusBarHidden</key>
+    <false/>
+    <key>UIRequiresFullScreen</key>
+    <false/>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <array>
+        <dict>
+          <key>CFBundleURLSchemes</key>
+          <array>
+            <string>fb{{fb.app.id}}</string>
+          </array>
+        </dict>
+      </array>
+    </array>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>fbapi</string>
+      <string>fb-messenger-share-api</string>
+      <string>fbauth2</string>
+      <string>fbshareextension</string>
+    </array>
+    <key>FacebookAppID</key>
+    <string>{{fb.app.id}}</string>
+    <key>FacebookDisplayName</key>
+    <string>{{fb.app.name}}</string>
+  </dict>
+</plist>"
+`;
+
+exports[`react-native foundation command validate with the mock project 8`] = `
 "// !$*UTF8*$!
 {
 	archiveVersion = 1;
@@ -1704,7 +1807,7 @@ exports[`react-native foundation command validate with the mock project 6`] = `
 "
 `;
 
-exports[`react-native foundation command validate with the mock project 7`] = `
+exports[`react-native foundation command validate with the mock project 9`] = `
 "
 #import \\"AppDelegate.h\\"
 
