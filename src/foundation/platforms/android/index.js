@@ -5,7 +5,6 @@ const createCodeSnippet = require('../../util/createCodeSnippet');
 const generateMainApplication = require('../../code/MainApplication.java');
 const generateMainActivity = require('../../code/MainActivity.java');
 const generateAppBuildGradle = require('../../code/app.build.gradle');
-const generateManifestXml = require('../../code/AndroidManifest.xml');
 
 const settingsGradle = createCodeSnippet('settings.gradle', '//');
 const projectGradle = createCodeSnippet('project.build.gradle', '//');
@@ -36,16 +35,6 @@ module.exports = {
       // Make sure there is a onWindowFocusChanged method in MainActivity
       this.mainActivityFile.getGenerator().onWindowFocusChanged(null);
     }
-
-    // Include the android:screenOrientation attribute to the activity tag
-    this.manifestPath = android.manifestPath;
-    this.manifestFile = generateManifestXml(this.manifestPath);
-
-    this.manifestFile.getGenerator().addAttribute(
-      'activity',
-      'android:screenOrientation',
-      app.config.orientation ? app.config.orientation : 'unspecified'
-    );
 
     return Object.assign({
       code: {
@@ -89,11 +78,9 @@ module.exports = {
   flush() {
     this.mainApplicationFile.flush();
     this.mainActivityFile.flush();
-    this.manifestFile.flush();
 
     if (this.app.config.fullScreen) {
       // Add the code snippet
-      console.log(this.mainActivityPath);
       fullScreenCode.applyAfter(
         this.mainActivityPath,
         /super\.onWindowFocusChanged\(hasFocus\);\s*\n/m
