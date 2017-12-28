@@ -1,7 +1,7 @@
 const filter = require('./_filter');
 
 module.exports = (name, platform) => {
-  const platformFilter = filter(platform);
+  const platformFilter = filter(name);
   return (project, pkg, dependencies) => {
     // Initialize the platform
 
