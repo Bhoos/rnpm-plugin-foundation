@@ -4,7 +4,9 @@
   "description": "A react-native dependency management plugin",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest foundation.spec.js",
+    "lint": "eslint src",
+    "prepare": "npm run lint && npm run test"
   },
   "repository": {
     "type": "git",
