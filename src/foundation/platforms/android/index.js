@@ -5,6 +5,7 @@ const createCodeSnippet = require('../../util/createCodeSnippet');
 const generateMainApplication = require('../../code/MainApplication.java');
 const generateMainActivity = require('../../code/MainActivity.java');
 const generateAppBuildGradle = require('../../code/app.build.gradle');
+const generateManifest = require('../../code/AndroidManifest.xml');
 
 const settingsGradle = createCodeSnippet('settings.gradle', '//');
 const projectGradle = createCodeSnippet('project.build.gradle', '//');
@@ -36,12 +37,24 @@ module.exports = {
       this.mainActivityFile.getGenerator().onWindowFocusChanged(null);
     }
 
-    return Object.assign({
-      code: {
-        mainApplication: this.mainApplicationFile.getGenerator(),
-        mainActivity: this.mainActivityFile.getGenerator(),
-      },
-    }, app);
+    return generateManifest(android.manifestPath).then((manifest) => {
+      manifest.setTargetPath(path.resolve(android.sourceDir, '..', 'RNFoundation-AndroidManifest.xml'));
+      this.manifest = manifest;
+
+      if (app.config.metaData) {
+        Object.keys(app.config.metaData).forEach((name) => {
+          manifest.getGenerator().metaData(name, app.config.metaData[name]);
+        });
+      }
+
+      return Object.assign({
+        code: {
+          mainApplication: this.mainApplicationFile.getGenerator(),
+          mainActivity: this.mainActivityFile.getGenerator(),
+        },
+        manifest: this.manifest.getGenerator(),
+      }, app);
+    });
   },
 
   updateProject() {
@@ -78,6 +91,8 @@ module.exports = {
   flush() {
     this.mainApplicationFile.flush();
     this.mainActivityFile.flush();
+
+    this.manifest.flush();
 
     if (this.app.config.fullScreen) {
       // Add the code snippet

@@ -22,13 +22,11 @@ module.exports = (name, platform) => {
     const constants = platformFilter(pkg.foundation, 'constants');
     const subModules = platformFilter(pkg.foundation, 'sub-modules');
 
-    const app = platform.init(project, {
+    return Promise.resolve(platform.init(project, {
       config,
       constants,
       subModules,
-    }, dependencies);
-
-    return {
+    }, dependencies)).then(app => ({
       getName: () => name,
 
       getConstants: () => constants,
@@ -46,6 +44,6 @@ module.exports = (name, platform) => {
       },
 
       flush: () => platform.flush(app),
-    };
+    }));
   };
 };
