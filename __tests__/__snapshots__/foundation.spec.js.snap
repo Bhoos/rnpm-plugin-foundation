@@ -268,7 +268,26 @@ android {
                         def content = manifest.replaceAll(/\\\\{\\\\{([\\\\w.]*)\\\\}\\\\}/) { all, key ->
                             foundation.constants.android[key]
                         }
-                        manifestOutFile.write(content, \\"UTF-8\\")
+
+                        // parse the manifest xml for adding configuration values
+                        def xml = new XmlSlurper(false, true).parseText(content);
+
+                        // Include screenOrientation in acitivity tag
+                        if (foundation.constants.android.screenOrientation) {
+                            xml.application.activity[0].@'android:screenOrientation' = foundation.config.screenOrientation
+                        }
+
+                        // Include meta-data tags within application node
+                        if (foundation.constants.android.metaData) {
+                            foundation.constants.android.metaData.each { name, value ->
+                                println \\"appending metaData $name $value\\"
+                                def metaData = new XmlSlurper().parseText(
+                                        \\"<meta-data xmlns:android=\\\\\\"http://schemas.android.com/apk/res/android\\\\\\" android:name=\\\\\\"android.$name\\\\\\" android:value=\\\\\\"$value\\\\\\" />\\"
+                                );
+                                xml.application.appendNode(metaData)
+                            }
+                        }
+                        manifestOutFile.write(groovy.xml.XmlUtil.serialize(xml), \\"UTF-8\\")
                     }
                 })
             }
