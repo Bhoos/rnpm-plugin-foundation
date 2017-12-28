@@ -8,6 +8,22 @@
     "react": "16.2.0"
   },
   "foundation": {
+    "app": {
+      "metaData": {
+        "android": {
+          "android.maxAspectRatio": "2.1"
+        }
+      }
+    },
+    "sub-modules": {
+      "React": {
+        "RCTLinking": {
+          "singleTask": true,
+          "universal": true
+        }
+      },
+      "react-native-firebase": ["Admob"]
+    },
     "constants": {
       "fb": {
         "app": {
