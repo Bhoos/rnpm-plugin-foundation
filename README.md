@@ -38,7 +38,7 @@ to declare library specific variables like:
     "constants": {
       "fb": {
         "app": {
-          "id": "<your fb app id>"
+          "id": "<your fb app id>",
           "name": "<your fb app name>"
         }
       }
@@ -57,7 +57,7 @@ You could define platform specific values if needed
   "foundation": {
     "app": {
       "bundleId": {
-        "android": "com.example.android.myapp"
+        "android": "com.example.android.myapp",
         "ios": "com.example.ios.myapp"
       },
     }
