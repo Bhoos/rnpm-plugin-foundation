@@ -13,8 +13,10 @@ module.exports = function androidManifest(file) {
       });
     });
 
-    editor.addMethod('link', (root, scheme, host, pathPrefix) => {
-      const intentFilter = root.node('application').node('activity').create('intent-filter');
+    editor.addMethod('link', (root, scheme, host, pathPrefix, autoVerify) => {
+      const intentFilter = root.node('application')
+        .node('activity')
+        .create('intent-filter', autoVerify ? { 'android:autoVerify': 'true' } : {});
       intentFilter.create('action', { 'android:name': 'android.intent.action.VIEW' });
       intentFilter.create('category', { 'android:name': 'android.intent.category.DEFAULT' });
       intentFilter.create('category', { 'android:name': 'android.intent.category.BROWSABLE' });
