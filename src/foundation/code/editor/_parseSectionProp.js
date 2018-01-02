@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-module.exports = function createHandlerFactory(lineParser) {
+module.exports = function createHandlerFactory(spacing, ending, lineParser) {
   return function createHandler(file) {
     const content = fs.readFileSync(file).toString('utf-8');
     const lines = content.split('\n');
@@ -28,9 +28,9 @@ module.exports = function createHandlerFactory(lineParser) {
 
       const isRoot = id === '' && indentation === '';
 
-      const childIndentation = isRoot ? '' : `${indentation}  `;
+      const childIndentation = isRoot ? '' : `${indentation}${spacing}`;
       const opening = isRoot ? '' : `${indentation}${id}${extra}\n`;
-      let closing = isRoot ? '' : `\n${indentation}end`;
+      let closing = isRoot ? '' : `\n${indentation}${ending}`;
 
       return {
         name: id,

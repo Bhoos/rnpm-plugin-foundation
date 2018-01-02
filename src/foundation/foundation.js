@@ -3,8 +3,6 @@ const fs = require('fs');
 const platforms = require('./platforms');
 
 const getDependencies = require('./getDependencies');
-const LockFile = require('./LockFile');
-const flatten = require('./util/flatten');
 
 module.exports = function foundation(args, config) {
   const project = config.getProjectConfig();
@@ -25,20 +23,6 @@ module.exports = function foundation(args, config) {
   // Initialize each platform for further processing
   return Promise.all(platforms.map(platform => platform(project, pkg, dependencies)))
     .then((platFormProcessors) => {
-      const constants = platFormProcessors.reduce((res, p) => {
-        const r = flatten(p.getConstants(), '.');
-        const pconfig = p.getConfig();
-
-        Object.assign(r, pconfig);
-
-        return Object.assign(res, {
-          [p.getName()]: r,
-        });
-      }, {});
-
-      // Create the lock file
-      LockFile.create(pkg, dependencies, constants);
-
       // Execute all the stages for all the platforms;
       const stages = ['updateProject', 'hook', 'flush'];
       stages.forEach((stage) => {

@@ -4,8 +4,7 @@ module.exports = (name, platform) => {
   const platformFilter = filter(name);
   return (project, pkg, dependencies) => {
     // Initialize the platform
-
-    const config = platformFilter(pkg.foundation, 'app');
+    const config = platformFilter(pkg.foundation, 'config');
     if (!config.name) {
       config.name = pkg.name;
     }

@@ -12,7 +12,7 @@ module.exports = function appBuildGradle(file) {
   });
 
   editor.addPropSetter('plugin', (root, name) => {
-    if (!root.props('apply').find(p => p.get().indexof(name) >= 0)) {
+    if (!root.props('apply').find(p => p.get().indexOf(name) >= 0)) {
       root.addProp('apply', `plugin: '${name}'`);
     }
   });

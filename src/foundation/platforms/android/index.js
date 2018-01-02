@@ -6,13 +6,15 @@ const generateMainApplication = require('../../code/MainApplication.java');
 const generateMainActivity = require('../../code/MainActivity.java');
 const generateAppBuildGradle = require('../../code/app.build.gradle');
 const generateManifest = require('../../code/AndroidManifest.xml');
+const generateProjectBuildGradle = require('../../code/project.build.gradle');
+const generateSettingsGradle = require('../../code/settings.gradle');
 
-const settingsGradle = createCodeSnippet('settings.gradle', '//');
+// const settingsGradle = createCodeSnippet('settings.gradle', '//');
 const projectGradle = createCodeSnippet('project.build.gradle', '//');
 
-const appDeclarationBuildGradle = createCodeSnippet('app.declaration.build.gradle', '//');
-const appDependenciesBuildGradle = createCodeSnippet('app.dependencies.build.gradle', '    //');
-const appManifestBuildGradle = createCodeSnippet('app.manifest.build.gradle', '            //');
+// const appDeclarationBuildGradle = createCodeSnippet('app.declaration.build.gradle', '//');
+// const appDependenciesBuildGradle = createCodeSnippet('app.dependencies.build.gradle', '    //');
+// const appManifestBuildGradle = createCodeSnippet('app.manifest.build.gradle', '            //');
 
 const fullScreenCode = createCodeSnippet('fullScreen.java', '    //');
 
@@ -30,6 +32,8 @@ module.exports = {
     this.mainActivityFile = generateMainActivity(mainActivityPath);
     this.mainApplicationFile = generateMainApplication(android.mainFilePath);
     this.appBuildGradle = generateAppBuildGradle(android.buildGradlePath);
+    this.projectBuildGradle = generateProjectBuildGradle(this.projectGradlePath);
+    this.settingsGradle = generateSettingsGradle(this.settingsGradlePath);
 
     // Check for app configuration (fullScreen, orientation, etc)
     if (app.config.fullScreen) {
@@ -37,8 +41,14 @@ module.exports = {
       this.mainActivityFile.getGenerator().onWindowFocusChanged(null);
     }
 
+    const appBuildGradle = this.appBuildGradle.getGenerator();
+    appBuildGradle.config({
+      applicationId: JSON.stringify(this.app.config.bundleId),
+      versionCode: JSON.stringify(this.app.config.buildNumber),
+      versionName: JSON.stringify(this.app.config.version),
+    });
+
     return generateManifest(android.manifestPath).then((manifest) => {
-      manifest.setTargetPath(path.resolve(android.sourceDir, '..', 'RNFoundation-AndroidManifest.xml'));
       this.manifest = manifest;
 
       if (app.config.metaData) {
@@ -48,51 +58,52 @@ module.exports = {
       }
 
       return Object.assign({
+        sourceDir: android.sourceDir,
         code: {
           mainApplication: this.mainApplicationFile.getGenerator(),
           mainActivity: this.mainActivityFile.getGenerator(),
         },
+        appGradle: appBuildGradle,
+        projectGradle: this.projectBuildGradle.getGenerator(),
+        settingsGradle: this.settingsGradle.getGenerator(),
         manifest: this.manifest.getGenerator(),
       }, app);
     });
   },
 
   updateProject() {
-    const appBuildGradle = this.appBuildGradle.getGenerator();
-    appBuildGradle.applicationId('foundation.constants.android.bundleId');
-    appBuildGradle.versionCode('foundation.constants.android.buildNumber');
-    appBuildGradle.versionName('foundation.constants.android.version');
-    this.appBuildGradle.flush();
+    // // Change the settings.gradle file
+    // settingsGradle.applyBefore(
+    //   this.settingsGradlePath,
+    //   /include\s+':app'/m
+    // );
 
-    // Change the settings.gradle file
-    settingsGradle.applyBefore(
-      this.settingsGradlePath,
-      /include\s+':app'/m
-    );
+    // projectGradle.applyAfter(this.projectGradlePath);
 
-    projectGradle.applyAfter(this.projectGradlePath);
+    // appDeclarationBuildGradle.applyAfter(
+    //   this.buildGradlePath,
+    //   /import com.android.build.OutputFile[^\n]*\n/m
+    // );
 
-    appDeclarationBuildGradle.applyAfter(
-      this.buildGradlePath,
-      /import com.android.build.OutputFile[^\n]*\n/m
-    );
+    // appDependenciesBuildGradle.applyAfter(
+    //   this.buildGradlePath,
+    //   /compile[\s(]+"com.facebook.react:react-native:.*".*\n/m
+    // );
 
-    appDependenciesBuildGradle.applyAfter(
-      this.buildGradlePath,
-      /compile[\s(]+"com.facebook.react:react-native:.*".*\n/m
-    );
-
-    appManifestBuildGradle.applyAfter(
-      this.buildGradlePath,
-      /\s+variant.outputs.each \{ output ->\s*\n/m
-    );
+    // appManifestBuildGradle.applyAfter(
+    //   this.buildGradlePath,
+    //   /\s+variant.outputs.each \{ output ->\s*\n/m
+    // );
   },
 
   flush() {
     this.mainApplicationFile.flush();
     this.mainActivityFile.flush();
 
+    this.appBuildGradle.flush();
     this.manifest.flush();
+    this.settingsGradle.flush();
+    this.projectBuildGradle.flush();
 
     if (this.app.config.fullScreen) {
       // Add the code snippet
@@ -101,5 +112,7 @@ module.exports = {
         /super\.onWindowFocusChanged\(hasFocus\);\s*\n/m
       );
     }
+
+    projectGradle.applyAfter(this.projectGradlePath);
   },
 };

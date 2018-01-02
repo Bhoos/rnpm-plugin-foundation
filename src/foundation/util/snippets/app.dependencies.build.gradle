@@ -1,9 +1,0 @@
-Version: 1
-Description: Iterate through the foundation lock file to compile android dependencies
---------------------------------------------------------------------------------
-    foundation.dependencies.each { dependency ->
-        // Only add the project if it consists of ReactPackages
-        if (dependency.androidPackages.size() > 0) {
-            compile(project(':' + dependency.name))
-        }
-    }

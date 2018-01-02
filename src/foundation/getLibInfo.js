@@ -5,11 +5,22 @@ const preDefinedHooks = require('../libs');
 const findAndroidPackages = require('./findAndroidPackages');
 const findIOSPodspec = require('./findIOSPodspec');
 
-const defaultAndroidHook = ({ code }, dependency) => {
+const defaultAndroidHook = ({ code, appGradle, settingsGradle }, dependency) => {
+  settingsGradle.include(dependency.pkg.name);
+  appGradle.projectDependency(dependency.pkg.name);
+
   // Register the package
   dependency.androidPackages.forEach((rp) => {
     code.mainApplication.import(rp.fullName);
     code.mainApplication.addReactPackage(`${rp.name}()`);
+  });
+};
+
+const defaultIOSHook = ({ sourceDir, podfile }, dependency) => {
+  dependency.podspecs.forEach((p) => {
+    podfile.pod(p.name, null, {
+      path: path.relative(sourceDir, path.dirname(p.path)),
+    });
   });
 };
 
@@ -34,6 +45,7 @@ function attachHook(library, hook) {
 
 module.exports = function getLibHook(pkg) {
   const library = {
+    pkg,
     hook: {},
     androidPackages: findAndroidPackages(pkg.name),
     iosPods: findIOSPodspec(pkg.name),
@@ -101,7 +113,10 @@ module.exports = function getLibHook(pkg) {
   // Attach the default hooks (required only in case of android)
   // There is nothing to be done by default in case of ios
   if (library.androidPackages.length > 0) {
-    attachHook(library, { android: defaultAndroidHook });
+    attachHook(library, {
+      android: defaultAndroidHook,
+      ios: defaultIOSHook,
+    });
   }
 
   // If there isn't anything to hook for, return null;

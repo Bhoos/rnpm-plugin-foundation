@@ -12,21 +12,69 @@ module.exports = function createXmlHandler(file) {
         return reject(err);
       }
 
-      function createNode(tag, obj) {
+      function createNode(tagName, obj) {
         return {
-          tag,
+          tag: tagName,
           getObject: () => obj,
           cloneObj: () => Object.assign({}, obj),
-          get: name => obj.$[name],
-          set: (name, value) => {
+          get(attr) {
+            if (!obj.$) {
+              return null;
+            }
+            return obj.$[attr];
+          },
+          set(attr, value) {
             if (obj.$ === undefined) {
               obj.$ = {};
             }
-            obj.$[name] = value;
+            obj.$[attr] = value;
+            return this;
           },
-          node: (name, index = 0) => createNode(name, obj[name][index]),
-          create(name, attributes = {}) {
-            const node = createNode(name, {
+          update(attributes) {
+            if (obj.$ === undefined) {
+              obj.$ = {};
+            }
+            Object.assign(obj.$, attributes);
+            return this;
+          },
+          nodes(tag) {
+            if (!obj[tag]) {
+              return [];
+            }
+
+            return obj[tag].map(n => createNode(tag, n));
+          },
+          nodeByName(tag, name) {
+            return this.nodeBy(tag, 'android:name', name);
+          },
+          nodeBy(tag, attr, attrValue) {
+            const node = this.node(tag, this.findIndex(tag, n => n.get(attr) === attrValue));
+            node.set(attr, attrValue);
+            return node;
+          },
+          findIndex(tag, cb) {
+            if (!obj[tag]) {
+              return -1;
+            }
+
+            return obj[tag].findIndex(o => cb(createNode(tag, o)));
+          },
+          node(tag, index = 0) {
+            if (!obj[tag]) {
+              obj[tag] = [];
+            }
+
+            let nObj = {};
+            if (index < 0 || index >= obj[tag].length) {
+              obj[tag].push(nObj);
+            } else {
+              nObj = obj[tag][index];
+            }
+
+            return createNode(tag, nObj);
+          },
+          create(tag, attributes = {}) {
+            const node = createNode(tag, {
               $: attributes,
             });
 

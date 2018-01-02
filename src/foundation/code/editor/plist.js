@@ -23,6 +23,31 @@ module.exports = function createPlistHandler(file) {
       info[name].push(value);
     },
 
+    addUnique: (name, value) => {
+      if (!info[name]) {
+        info[name] = [];
+      }
+
+      if (!info[name].find(n => n === value)) {
+        info[name].push(value);
+      }
+    },
+
+    find: (name, cb) => {
+      if (!info[name]) {
+        return null;
+      }
+
+      return info[name].find(cb);
+    },
+
+    all: (name) => {
+      if (!info[name]) {
+        return [];
+      }
+      return info[name];
+    },
+
     info,
   };
 

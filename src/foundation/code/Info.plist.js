@@ -30,15 +30,22 @@ module.exports = function infoPlist(file) {
     });
   });
 
-  editor.addMethod('link', (g, scheme) => {
-    g.add('CFBundleURLTypes', [{
-      CFBundleURLSchemes: [scheme],
-    }]);
+  editor.addMethod('link', (g, name, scheme) => {
+    const schemes = [scheme === undefined ? name : scheme];
+    const n = g.find('CFBundleURLTypes', b => b.CFBundleURLName === name);
+    if (n) {
+      n.CFBundleURLSchemes = schemes;
+    } else {
+      g.add('CFBundleURLTypes', {
+        CFBundleURLName: name,
+        CFBundleURLSchemes: schemes,
+      });
+    }
   });
 
   editor.addMethod('queriesSchemes', (g, schemes) => {
     schemes.forEach((scheme) => {
-      g.add('LSApplicationQueriesSchemes', scheme);
+      g.addUnique('LSApplicationQueriesSchemes', scheme);
     });
   });
 

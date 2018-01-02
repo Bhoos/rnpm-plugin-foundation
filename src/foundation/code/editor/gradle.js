@@ -1,6 +1,6 @@
 const parseSectionProp = require('./_parseSectionProp');
 
-module.exports = parseSectionProp((line, raw, section, parse) => {
+module.exports = parseSectionProp('    ', '}', (line, raw, section, parse) => {
   // Ignore empty lines
   if (line.length === 0 || line[0] === '/' || line[0] === '*') {
     section.addRaw(raw);

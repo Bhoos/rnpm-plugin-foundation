@@ -1,18 +1,22 @@
-Version: 1
-Description: A project snippet to override sdk version and build tools version
+Version: 2
+Description: Override the compile sdk version and build tool version for all the libraries
 --------------------------------
-// Declare values
 def sCompileSdkVersion = ''
 def sBuildToolsVersion = ''
 
 subprojects { subproject ->
-    // Override the sdk and build tools for all the subprojects
-    // taking the same value as is defined for the main application
     afterEvaluate {
-        if (subproject.plugins.hasPlugin('android')) {
+        if (subproject.name == 'app') {
             sCompileSdkVersion = subproject.android.compileSdkVersion
             sBuildToolsVersion = subproject.android.buildToolsVersion
-        } else if (subproject.plugins.hasPlugin('android-library')) {
+        }
+    }
+}
+
+subprojects { subproject ->
+    // Update all the libraries
+    afterEvaluate {
+        if (subproject.plugins.hasPlugin('android-library')) {
             android {
                 compileSdkVersion sCompileSdkVersion
                 buildToolsVersion sBuildToolsVersion

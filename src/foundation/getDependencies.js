@@ -39,11 +39,12 @@ function getSubModules(pkg, lib) {
  */
 module.exports = function getDependencies(pkg) {
   const libraries = [];
-  const localPodspecs = path.resolve('ios', 'Pods', 'Local Podspecs');
+  const localPodspecs = path.resolve('node_modules');
 
   // Get all the hooks for this package
   Object.keys(pkg.dependencies || {}).forEach((d) => {
-    const dPkg = JSON.parse(fs.readFileSync(`./node_modules/${d}/package.json`));
+    const dPath = path.resolve('node_modules', d);
+    const dPkg = JSON.parse(fs.readFileSync(path.resolve(dPath, 'package.json')));
     const lib = getLibInfo(dPkg);
 
     // No need to do anything
@@ -55,9 +56,9 @@ module.exports = function getDependencies(pkg) {
     const podspecs = lib.iosPods.map((pod, index) => {
       if (pod.files) {
         // Make sure we have a "Local Podspecs" folder
-        mkdirp.sync(localPodspecs);
+        // mkdirp.sync(localPodspecs);
 
-        const podspecFile = path.resolve(localPodspecs, `${dPkg.name}.podspec`);
+        const podspecFile = path.resolve(dPath, 'ios', `${dPkg.name}.podspec`);
         // Create a pod spec file with the given source files
         const dict = {
           pkg: {
@@ -95,6 +96,7 @@ module.exports = function getDependencies(pkg) {
       return res;
     });
 
+    lib.podspecs = podspecs;
     libraries.push({
       runHook: (platform, app) => {
         if (lib.hook[platform]) {

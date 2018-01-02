@@ -9,7 +9,7 @@ module.exports = function projectBuildGradle(file) {
     const n = `${name}:`;
     // no need to add a classpath if it already exists
     if (!dependencies.props('classpath').find(p => p.get().indexOf(n) >= 0)) {
-      dependencies.addProp('classpath', `'${n}${version}`);
+      dependencies.addProp('classpath', `'${n}${version}'`);
     }
   });
 
