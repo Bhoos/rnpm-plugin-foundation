@@ -70,7 +70,7 @@ module.exports = {
       CFBundleIdentifier: app.config.bundleId,
       CFBundleName: app.config.name,
       CFBundleShortVersionString: app.config.version,
-      CFBundleVersion: app.config.buildNumber,
+      CFBundleVersion: `${app.config.buildNumber}`,
     });
 
     targetPlist.fullScreen(!!app.config.fullScreen);

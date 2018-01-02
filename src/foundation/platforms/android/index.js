@@ -44,7 +44,7 @@ module.exports = {
     const appBuildGradle = this.appBuildGradle.getGenerator();
     appBuildGradle.config({
       applicationId: JSON.stringify(this.app.config.bundleId),
-      versionCode: JSON.stringify(this.app.config.buildNumber),
+      versionCode: JSON.stringify(parseInt(this.app.config.buildNumber, 10)),
       versionName: JSON.stringify(this.app.config.version),
     });
 
