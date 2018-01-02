@@ -24,8 +24,9 @@ function recursiveCopy(target, source) {
 const filesToCheck = {
   'foundation.lock': true,
   android: {
-    'RNFoundation-AndroidManifest.xml': true,
+    'AndroidManifest.xml': true,
     'settings.gradle': true,
+    'build.gradle': true,
     app: {
       'build.gradle': true,
       'MainActivity.java': true,
@@ -33,9 +34,8 @@ const filesToCheck = {
     },
   },
   ios: {
-    'RNFoundation-Info.plist': true,
-    'project.pbxproj': true,
     MockProject: {
+      'Info.plist': true,
       'AppDelegate.m': true,
     },
   },
