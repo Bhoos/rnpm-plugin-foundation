@@ -10,6 +10,7 @@
   },
   "foundation": {
     "config": {
+      "buildNumber": 2,
       "metaData": {
         "android": {
           "android.maxAspectRatio": "2.1"
@@ -19,8 +20,9 @@
     "sub-modules": {
       "react-native": {
         "Linking": {
-          "singleTask": true,
-          "universal": true
+          "host": "www.example.com",
+          "pathPrefix": "/yourapp/",
+          "scheme": "https"
         }
       },
       "react-native-firebase": ["Admob", "Analytics"]
