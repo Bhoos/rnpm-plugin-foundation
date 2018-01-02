@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const mkdirp = require('mkdirp');
 
 const flatten = require('./util/flatten');
 const isObject = require('./util/isObject');
@@ -39,7 +38,6 @@ function getSubModules(pkg, lib) {
  */
 module.exports = function getDependencies(pkg) {
   const libraries = [];
-  const localPodspecs = path.resolve('node_modules');
 
   // Get all the hooks for this package
   Object.keys(pkg.dependencies || {}).forEach((d) => {
