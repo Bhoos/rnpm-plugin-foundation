@@ -22,7 +22,6 @@ function recursiveCopy(target, source) {
 
 // Check all the files to match for the snapshot
 const filesToCheck = {
-  'foundation.lock': true,
   android: {
     'AndroidManifest.xml': true,
     'settings.gradle': true,
