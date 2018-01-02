@@ -33,9 +33,11 @@ const filesToCheck = {
     },
   },
   ios: {
+    'project.pbxproj': true,
     MockProject: {
       'Info.plist': true,
       'AppDelegate.m': true,
+      'MockProject.entitlements': true,
     },
   },
 };
