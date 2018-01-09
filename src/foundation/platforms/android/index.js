@@ -37,6 +37,8 @@ module.exports = {
 
     // Check for app configuration (fullScreen, orientation, etc)
     if (app.config.fullScreen) {
+      // View is required for fullScreen
+      this.mainActivityFile.getGenerator().import('android.view.View');
       // Make sure there is a onWindowFocusChanged method in MainActivity
       this.mainActivityFile.getGenerator().onWindowFocusChanged(null);
     }
@@ -50,6 +52,14 @@ module.exports = {
 
     return generateManifest(android.manifestPath).then((manifest) => {
       this.manifest = manifest;
+
+      if (app.config.fullScreen) {
+        manifest.getGenerator().fullScreen(app.config.fullScreen);
+      }
+
+      if (app.config.orientation) {
+        manifest.getGenerator().orientation(app.config.orientation);
+      }
 
       if (app.config.metaData) {
         Object.keys(app.config.metaData).forEach((name) => {
