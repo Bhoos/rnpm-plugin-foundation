@@ -365,6 +365,13 @@ public class MainApplication extends Application implements ReactApplication {
 `;
 
 exports[`react-native foundation command validate with the mock project 7`] = `
+"<?xml version=\\"1.0\\" encoding=\\"UTF-8\\" standalone=\\"yes\\"?>
+<resources>
+  <style name=\\"AppTheme\\" parent=\\"Theme.AppCompat.Light.NoActionBar\\"/>
+</resources>"
+`;
+
+exports[`react-native foundation command validate with the mock project 8`] = `
 "// !$*UTF8*$!
 {
 	archiveVersion = 1;
@@ -1653,7 +1660,7 @@ exports[`react-native foundation command validate with the mock project 7`] = `
 "
 `;
 
-exports[`react-native foundation command validate with the mock project 8`] = `
+exports[`react-native foundation command validate with the mock project 9`] = `
 "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>
 <!DOCTYPE plist PUBLIC \\"-//Apple//DTD PLIST 1.0//EN\\" \\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\">
 <plist version=\\"1.0\\">
@@ -1737,7 +1744,7 @@ exports[`react-native foundation command validate with the mock project 8`] = `
 </plist>"
 `;
 
-exports[`react-native foundation command validate with the mock project 9`] = `
+exports[`react-native foundation command validate with the mock project 10`] = `
 "
 #import \\"AppDelegate.h\\"
 
@@ -1804,7 +1811,7 @@ exports[`react-native foundation command validate with the mock project 9`] = `
 "
 `;
 
-exports[`react-native foundation command validate with the mock project 10`] = `
+exports[`react-native foundation command validate with the mock project 11`] = `
 "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>
 <!DOCTYPE plist PUBLIC \\"-//Apple//DTD PLIST 1.0//EN\\" \\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\">
 <plist version=\\"1.0\\">

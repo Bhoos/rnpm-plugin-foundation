@@ -31,6 +31,11 @@ const filesToCheck = {
       'MainActivity.java': true,
       'MainApplication.java': true,
     },
+    res: {
+      values: {
+        'styles.xml': true,
+      },
+    },
   },
   ios: {
     'project.pbxproj': true,
