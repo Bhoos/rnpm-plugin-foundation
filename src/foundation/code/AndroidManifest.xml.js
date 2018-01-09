@@ -1,9 +1,26 @@
+const path = require('path');
 const xmlEditor = require('./editor/xml');
 
 module.exports = function androidManifest(file) {
-  return xmlEditor(file).then((editor) => {
+  const styleFile = path.resolve(path.dirname(file), 'res', 'values', 'styles.xml');
+
+  return xmlEditor(file).then(editor => xmlEditor(styleFile).then((styleEditor) => {
+    styleEditor.addMethod('fullScreen', (root, fullScreen) => {
+      if (fullScreen) {
+        const style = root.node('style');
+        style.nodeBy('item', 'name', 'android:windowNoTitle').setValue('true');
+        style.nodeBy('item', 'name', 'windowActionBar').setValue('false');
+        style.nodeBy('item', 'name', 'android:windowFullscreen').setValue('true');
+        style.nodeBy('item', 'name', 'android:windowContentOverlay').setValue('@null');
+      }
+    });
+
     editor.addMethod('orientation', (root, orientation) => {
-      root.node('application').set('android:screenOrientation', orientation);
+      root.node('application').node('activity').set('android:screenOrientation', orientation);
+    });
+
+    editor.addMethod('fullScreen', (root, fullScreen) => {
+      styleEditor.getGenerator().fullScreen(fullScreen);
     });
 
     editor.addMethod('metaData', (root, name, value) => {
@@ -35,6 +52,12 @@ module.exports = function androidManifest(file) {
       }
     });
 
-    return editor;
-  });
+    return {
+      ...editor,
+      flush: () => {
+        editor.flush();
+        styleEditor.flush();
+      },
+    };
+  }));
 };
