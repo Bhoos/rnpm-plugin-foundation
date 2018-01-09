@@ -30,6 +30,9 @@ module.exports = function createXmlHandler(file) {
             obj.$[attr] = value;
             return this;
           },
+          setValue(txt) {
+            obj._ = txt;
+          },
           update(attributes) {
             if (obj.$ === undefined) {
               obj.$ = {};
