@@ -1,6 +1,6 @@
 {
   "name": "rnpm-plugin-foundation",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "A react-native dependency management plugin",
   "main": "index.js",
   "scripts": {
