@@ -50,7 +50,7 @@ ${commentPrefix} BLOCK END [${id}]
       return codeTemplate;
     }
 
-    return codeTemplate.replace(/{{[\w.]*}}/g, (m, key) => (
+    return codeTemplate.replace(/\{\{([\w.]*)\}\}/g, (m, key) => (
       dict[key]
     ));
   }
