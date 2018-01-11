@@ -17,6 +17,8 @@ const projectGradle = createCodeSnippet('project.build.gradle', '//');
 // const appManifestBuildGradle = createCodeSnippet('app.manifest.build.gradle', '            //');
 
 const fullScreenCode = createCodeSnippet('fullScreen.java', '    //');
+const bundleSignatureGradle = createCodeSnippet('bundle-signature.gradle', '//');
+const validateSignatureJava = createCodeSnippet('validate-signature.java', '  //');
 
 module.exports = {
   init({ android }, app, dependencies) {
@@ -28,7 +30,9 @@ module.exports = {
     this.buildGradlePath = android.buildGradlePath;
     const mainActivityPath = android.mainFilePath.replace('MainApplication', 'MainActivity');
 
+    this.mainFilePath = android.mainFilePath;
     this.mainActivityPath = mainActivityPath;
+
     this.mainActivityFile = generateMainActivity(mainActivityPath);
     this.mainApplicationFile = generateMainApplication(android.mainFilePath);
     this.appBuildGradle = generateAppBuildGradle(android.buildGradlePath);
@@ -65,6 +69,20 @@ module.exports = {
         Object.keys(app.config.metaData).forEach((name) => {
           manifest.getGenerator().metaData(name, app.config.metaData[name]);
         });
+      }
+
+      if (app.config.signBundle) {
+        manifest.getGenerator().metaData('BUNDLE-SIGNATURE', '--UNIQUE-BUNDLE-SIGNATURE--');
+
+        const m = this.mainApplicationFile.getGenerator();
+        m.onCreate('this', () => 'validateSignature()');
+        m.import('android.content.pm.ApplicationInfo');
+        m.import('android.content.pm.PackageManager');
+        m.import('java.io.IOException');
+        m.import('java.io.InputStream');
+        m.import('java.math.BigInteger');
+        m.import('java.security.MessageDigest');
+        m.import('java.security.NoSuchAlgorithmException');
       }
 
       return Object.assign({
@@ -114,6 +132,20 @@ module.exports = {
     this.manifest.flush();
     this.settingsGradle.flush();
     this.projectBuildGradle.flush();
+
+    if (this.app.config.signBundle) {
+      const salt = { SALT: this.app.config.signBundle };
+      bundleSignatureGradle.applyBefore(
+        this.buildGradlePath,
+        /^dependencies\s*\{/m,
+        salt
+      );
+      validateSignatureJava.applyBefore(
+        this.mainFilePath,
+        /\s*private final ReactNativeHost/m,
+        salt
+      );
+    }
 
     if (this.app.config.fullScreen) {
       // Add the code snippet
