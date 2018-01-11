@@ -153,20 +153,20 @@ module.exports = function createJavaHandler(file) {
           let paramNames = params.map(p => p.name);
 
           let methodBody = null;
+          let callingArgs = `${name}(${paramNames.join(', ')})`;
+          if (callArgs) {
+            callingArgs = `${callArgs(...params)}`;
+          }
+
           if (match) {
             methodBody = getMethodBody(match.index + match[0].length);
             // Search for the caller within the body, in which case assume the code has
             // already been added
-            if (methodBody.includes(caller)) {
+            if (methodBody.includes(`${caller}.${callingArgs}`)) {
               return;
             }
 
             paramNames = match.slice(1, params.length + 1);
-          }
-
-          let callingArgs = `${name}(${paramNames.join(', ')})`;
-          if (callArgs) {
-            callingArgs = `${callArgs(...params)}`;
           }
 
           // the calling code
