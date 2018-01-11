@@ -1,0 +1,27 @@
+Version: 1
+Description: Generate a md5 signature and include it in AndroidManifest
+-------------
+android.applicationVariants.all { variant ->
+    variant.outputs.each { output ->
+        def p = output.processManifest
+        p.doLast {
+            def bundle = new File("$buildDir/intermediates/assets/release/index.android.bundle")
+            def salt = '{{SALT}}'
+            def signature = ""
+            if (bundle.exists()) {
+                java.security.MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+                digest.update(bundle.getBytes())
+                digest.update(salt.getBytes('UTF-8'))
+                signature = new BigInteger(1, digest.digest()).toString(16)
+            }
+
+            [p.manifestOutputFile, p.instantRunManifestOutputFile].forEach({ f ->
+                if (f.exists()) {
+                    def newContent = f.getText("UTF-8").replace("--UNIQUE-BUNDLE-SIGNATURE--", "${signature}")
+                    f.write(newContent, "UTF-8")
+                    println newContent
+                }
+            })
+        }
+    }
+}
