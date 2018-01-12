@@ -30,6 +30,7 @@ exports[`react-native foundation command validate with the mock project 1`] = `
       </intent-filter>
     </activity>
     <meta-data android:name=\\"android.maxAspectRatio\\" android:value=\\"2.1\\"/>
+    <meta-data android:name=\\"BUNDLE-SIGNATURE\\" android:value=\\"--UNIQUE-BUNDLE-SIGNATURE--\\"/>
     <meta-data android:name=\\"com.facebook.sdk.ApplicationId\\" android:value=\\"fbfakeId\\"/>
   </application>
 </manifest>"
@@ -247,6 +248,35 @@ android {
     }
 }
 
+// AUTO-GENERATED rnpm-plugin-foundation:bundle-signature.gradle Snippet[00000000-0000-0000-0000-000000000003]<1>
+// Generate a md5 signature and include it in AndroidManifest
+// BLOCK BEGIN [00000000-0000-0000-0000-000000000003]
+
+android.applicationVariants.all { variant ->
+    variant.outputs.each { output ->
+        def p = output.processManifest
+        p.doLast {
+            def bundle = new File(\\"$buildDir/intermediates/assets/release/index.android.bundle\\")
+            def salt = 'Salt as per your taste'
+            def signature = \\"\\"
+            if (bundle.exists()) {
+                java.security.MessageDigest digest = java.security.MessageDigest.getInstance(\\"MD5\\");
+                digest.update(bundle.getBytes())
+                digest.update(salt.getBytes('UTF-8'))
+                signature = new BigInteger(1, digest.digest()).toString(16)
+            }
+
+            [p.manifestOutputFile, p.instantRunManifestOutputFile].each { f ->
+                if (f.exists()) {
+                    def newContent = f.getText(\\"UTF-8\\").replace(\\"--UNIQUE-BUNDLE-SIGNATURE--\\", \\"$signature\\")
+                    f.write(newContent, \\"UTF-8\\")
+                }
+            }
+        }
+    }
+}
+
+// BLOCK END [00000000-0000-0000-0000-000000000003]
 dependencies {
     compile fileTree(dir: \\"libs\\", include: [\\"*.jar\\"])
     compile \\"com.android.support:appcompat-v7:27.0.2\\"
@@ -312,6 +342,13 @@ import com.facebook.soloader.SoLoader;
 
 import java.util.Arrays;
 import java.util.List;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
@@ -323,7 +360,39 @@ import io.invertase.firebase.admob.RNFirebaseAdMobPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   // Auto-generated property rnpm-plugin-foundation
-  protected static CallbackManager callbackManager = CallbackManager.Factory.create();
+  protected static CallbackManager callbackManager = CallbackManager.Factory.create();  // AUTO-GENERATED rnpm-plugin-foundation:validate-signature.java Snippet[00000000-0000-0000-0000-000000000004]<1>
+  // In release mode check if the bundle is valid
+  // BLOCK BEGIN [00000000-0000-0000-0000-000000000004]
+
+  private void validateSignature() {
+    if (BuildConfig.BUILD_TYPE.equalsIgnoreCase(\\"release\\")) {
+      try {
+        byte[] buffer = new byte[10240];
+        InputStream inp = getAssets().open(\\"index.android.bundle\\");
+        MessageDigest digest = MessageDigest.getInstance(\\"MD5\\");
+        while (inp.available() > 0) {
+          int length = inp.read(buffer);
+          digest.update(buffer, 0, length);
+        }
+        digest.update(\\"Salt as per your taste\\".getBytes(\\"UTF-8\\"));
+        String md5 = new BigInteger(1, digest.digest()).toString(16);
+
+        ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+        String signature = ai.metaData.getString(\\"BUNDLE-SIGNATURE\\");
+        if (!signature.equals(md5)) {
+          throw new RuntimeException(\\"Invalid Javascript Bundle Signature\\");
+        }
+      } catch (IOException e) {
+        throw new RuntimeException(\\"Javascript bundle not found\\");
+      } catch (NoSuchAlgorithmException e) {
+        throw new RuntimeException(\\"Could not generate signature\\");
+      } catch (PackageManager.NameNotFoundException e) {
+        throw new RuntimeException(\\"Signature not found in manifest\\");
+      }
+    }
+  }
+  // BLOCK END [00000000-0000-0000-0000-000000000004]
+
 
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -358,6 +427,9 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    // Auto-generated call (rnpm-plugin-foundation)
+    this.validateSignature();
+
     SoLoader.init(this, /* native exopackage */ false);
   }
 }
