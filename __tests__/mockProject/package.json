@@ -10,6 +10,7 @@
   },
   "foundation": {
     "config": {
+      "signBundle": "Salt as per your taste",
       "buildNumber": 2,
       "metaData": {
         "android": {

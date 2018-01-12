@@ -180,3 +180,18 @@ The hook file then needs to be provided via `package.json`
   }
 }
 ```
+
+# Additional Features
+1. Bundle signature `config.signBundle`  
+   Provide a salt in the configuration to sign your javascript bundle to avoid 
+   tampering of javascript bundle directly in the apk. Works in android only.
+```json
+  { 
+    "foundation": {
+      "config": {
+        ...
+        "signBundle": "<Salt for generating signature>"
+      }
+    }
+  }
+```
