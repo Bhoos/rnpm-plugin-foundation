@@ -17,9 +17,8 @@ android.applicationVariants.all { variant ->
 
             [p.manifestOutputFile, p.instantRunManifestOutputFile].each { f ->
                 if (f.exists()) {
-                    def newContent = f.getText("UTF-8").replace("--UNIQUE-BUNDLE-SIGNATURE--", "${signature}")
+                    def newContent = f.getText("UTF-8").replace("--UNIQUE-BUNDLE-SIGNATURE--", "$signature")
                     f.write(newContent, "UTF-8")
-                    println newContent
                 }
             }
         }
