@@ -14,7 +14,7 @@
       "buildNumber": 2,
       "metaData": {
         "android": {
-          "android.maxAspectRatio": "2.1"
+          "android.max_aspect": "2.1"
         }
       }
     },

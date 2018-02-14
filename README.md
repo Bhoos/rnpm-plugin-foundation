@@ -195,3 +195,22 @@ The hook file then needs to be provided via `package.json`
     }
   }
 ```
+
+2. Support higher **aspect ratios** on android  
+   You can provide meta-data values directly from `package.json`. For example
+   to support higher aspect ratios (>16:9), you need to provide a meta-data
+   `android.max_aspect` value in `AndroidManifest.xml`, you can include that within
+   `foundation` -
+```json
+  {
+    "foundation": {
+      "config": {
+        "metaData": {
+          "android": {
+            "android.max_aspect": "2.1"
+          }
+        }
+      }
+    }
+  }
+```
